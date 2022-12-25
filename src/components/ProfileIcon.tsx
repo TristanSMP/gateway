@@ -13,7 +13,7 @@ export const ProfileIcon = () => {
             width={80}
             height={80}
             alt="Your profile picture"
-            src={sessionData.user.image ?? "a"}
+            src={sessionData.user.image ?? "/assets/images/TLogo.png"}
           />
         </div>
       </label>
