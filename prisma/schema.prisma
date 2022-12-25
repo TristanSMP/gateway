@@ -45,8 +45,25 @@ model User {
   email         String?   @unique
   emailVerified DateTime?
   image         String?
+
+  linkChallenge String? @unique
+  minecraftUUID String? @unique
+
   accounts      Account[]
   sessions      Session[]
+  itemsOnMarket AuctionedItem[]
+  application   Application?    @relation(fields: [applicationId], references: [id])
+  applicationId String?
+}
+
+model Application {
+  id String @id @default(cuid())
+
+  data Json
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  User      User[]
 }
 
 model VerificationToken {
@@ -55,4 +72,41 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// AuctionedItem status
+enum AuctionStatus {
+  ACTIVE
+  SOLD
+  WITHDRAWN
+  PENDING
+}
+
+// Individual items that are up for auction on a specfic item type
+model AuctionedItem {
+  id     String        @id @default(cuid())
+  price  Int
+  status AuctionStatus @default(PENDING)
+
+  seller   User   @relation(fields: [sellerId], references: [id])
+  sellerId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  type    ItemType? @relation(fields: [typeb64], references: [base64])
+  typeb64 String?
+}
+
+// The item type that is being auctioned
+// There can be multiple auctioned items of the same type from different or the same sellers
+model ItemType {
+  base64 String @id
+  slug   String @unique
+  name   String
+
+  stock AuctionedItem[] // Items that are currently up for auction
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
