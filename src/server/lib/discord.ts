@@ -27,55 +27,50 @@ export async function updateRoleMeta(
         accounts: Account[];
       })
 ) {
-  try {
-    const user =
-      typeof userOrId === "string"
-        ? await prisma.user.findUnique({
-            where: {
-              id: userOrId,
-            },
-            include: {
-              accounts: true,
-              application: true,
-            },
-          })
-        : userOrId;
+  const user =
+    typeof userOrId === "string"
+      ? await prisma.user.findUnique({
+          where: {
+            id: userOrId,
+          },
+          include: {
+            accounts: true,
+            application: true,
+          },
+        })
+      : userOrId;
 
-    if (!user || !user.minecraftUUID) {
-      return;
+  if (!user || !user.minecraftUUID) {
+    throw new Error("User not found");
+  }
+
+  const discordUser = getDiscordUser(user.accounts);
+
+  if (!discordUser.accessToken) {
+    throw new Error("Discord user not found");
+  }
+
+  const profile = await UUIDToProfile(user.minecraftUUID);
+
+  const res = await fetch(
+    `${RouteBases.api}${Routes.userApplicationRoleConnection(
+      env.DISCORD_CLIENT_ID
+    )}`,
+    {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${discordUser.accessToken}`,
+      },
+      body: JSON.stringify(createRoleMeta(profile, user)),
     }
+  );
 
-    const discordUser = getDiscordUser(user.accounts);
-
-    if (!discordUser.accessToken) {
-      return;
-    }
-
-    const profile = await UUIDToProfile(user.minecraftUUID);
-
-    const res = await fetch(
-      `${RouteBases.api}${Routes.userApplicationRoleConnection(
-        env.DISCORD_CLIENT_ID
-      )}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${discordUser.accessToken}`,
-        },
-        body: JSON.stringify(createRoleMeta(profile, user)),
-      }
+  if (res.status >= 400) {
+    res.json().then(console.log);
+    throw new Error(
+      `Failed to update role meta: ${res.status} ${res.statusText}`
     );
-
-    if (res.status >= 400) {
-      res.json().then(console.log);
-      throw new Error(
-        `Failed to update role meta: ${res.status} ${res.statusText}`
-      );
-    }
-  } catch (e) {
-    console.log("something went wrong while updating role meta");
-    console.error(e);
   }
 }
 
