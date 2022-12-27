@@ -2,6 +2,7 @@ import { ApplicationStatus } from "@prisma/client";
 import type { ButtonHandler, ButtonInteraction } from "disploy";
 import { prisma } from "../../server/db/client";
 import { updateRoleMeta } from "../../server/lib/discord";
+import { syncUser } from "../../server/lib/linking";
 
 async function handle(
   interaction: ButtonInteraction,
@@ -34,7 +35,7 @@ async function handle(
   }
 
   try {
-    await prisma.application.update({
+    const updatedApplication = await prisma.application.update({
       where: {
         id: application.id,
       },
@@ -47,13 +48,40 @@ async function handle(
       },
     });
 
-    await updateRoleMeta({
+    const syncedUser = await syncUser({
       ...application.user,
-      application: application,
-    });
+      application: updatedApplication,
+    })
+      .then(() => true)
+      .catch(() => false);
+
+    const syncedRoleMeta = await updateRoleMeta({
+      ...application.user,
+      application: updatedApplication,
+    })
+      .then(() => true)
+      .catch(() => false);
 
     return void interaction.editReply({
-      content: `Application ${action === "accept" ? "accepted" : "denied"}.`,
+      embeds: [
+        {
+          title: "Updated user (bot --> tsmp)",
+          description: `Application status: \`${updatedApplication.status}\``,
+          fields: [
+            {
+              name: "Synced user (tsmp <-> mc-server)",
+              value: syncedUser ? "✅" : "❌",
+              inline: true,
+            },
+            {
+              name: "Synced role meta (tsmp <-> discord)",
+              value: syncedRoleMeta ? "✅" : "❌",
+              inline: true,
+            },
+          ],
+          color: syncedUser && syncedRoleMeta ? 0x00ff00 : 0xff0000,
+        },
+      ],
     });
   } catch (error) {
     console.error(error);
