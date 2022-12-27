@@ -1,5 +1,7 @@
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
+import { createApplicationChannel } from "../../lib/discord";
+import { getDiscordUser } from "../../lib/utils";
 import { protectedProcedure, router } from "../trpc";
 
 export const ApplicationSchema = z.object({
@@ -16,13 +18,17 @@ export const applicationsRouter = router({
         where: {
           id: ctx.session.user.id,
         },
+        include: {
+          accounts: true,
+          application: true,
+        },
       });
 
       if (!user) {
         throw new Error("User not found");
       }
 
-      if (user.applicationId) {
+      if (user.application) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "You have already applied",
@@ -32,13 +38,19 @@ export const applicationsRouter = router({
       const application = await ctx.prisma.application.create({
         data: {
           data: input,
-          User: {
+          user: {
             connect: {
               id: user.id,
             },
           },
         },
       });
+
+      await createApplicationChannel(
+        application,
+        getDiscordUser(user.accounts).id,
+        input
+      );
 
       return {
         applicationId: application.id,

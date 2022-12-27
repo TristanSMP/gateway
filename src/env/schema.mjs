@@ -23,6 +23,10 @@ export const serverSchema = z.object({
   DISCORD_CLIENT_SECRET: z.string(),
   ELYTRA_API_ROOT: z.string().url(),
   ELYTRA_TOKEN: z.string().optional(),
+  DISCORD_TOKEN: z.string(),
+  DISCORD_PUBLIC_KEY: z.string(),
+  DISCORD_GUILD_ID: z.string(),
+  DISCORD_CATEGORY_ID: z.string(),
 });
 
 /**

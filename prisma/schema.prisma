@@ -52,18 +52,28 @@ model User {
   accounts      Account[]
   sessions      Session[]
   itemsOnMarket AuctionedItem[]
-  application   Application?    @relation(fields: [applicationId], references: [id])
-  applicationId String?
+  isBotAdmin    Boolean         @default(false)
+  application   Application?
+}
+
+enum ApplicationStatus {
+  PendingReview
+  Approved
+  Denied
 }
 
 model Application {
   id String @id @default(cuid())
 
-  data Json
+  data     Json
+  status   ApplicationStatus @default(PendingReview)
+  reviewer String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  User      User[]
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
 }
 
 model VerificationToken {

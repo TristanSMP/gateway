@@ -1,7 +1,7 @@
 import { type NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
-import { parseLinkChallenge } from "../server/lib/linking";
+import MinecraftAvatar from "../components/MinecraftAvatar";
 import { trpc } from "../utils/trpc";
 
 const OnBoarding: NextPage = () => {
@@ -39,7 +39,7 @@ const OnBoarding: NextPage = () => {
             if (!status.data.linked) {
               return (
                 <LinkStage
-                  linkChallenge={parseLinkChallenge(status.data.linkChallenge)}
+                  linkChallenge={status.data.linkChallenge}
                   refetch={status.refetch}
                 />
               );
@@ -82,6 +82,7 @@ function ApplicationStage({ refetch }: { refetch: () => Promise<unknown> }) {
             value={username}
             onChange={(e) => setUsername(e.target.value)}
           />
+          <MinecraftAvatar uuidOrUsername={username} />
         </div>
 
         <div className="form-control">
@@ -131,10 +132,11 @@ function LinkStage({
   linkChallenge,
   refetch,
 }: {
-  linkChallenge: string[];
+  linkChallenge: string;
   refetch: () => Promise<unknown>;
 }) {
   const mutation = trpc.auth.verifyLinkChallenge.useMutation();
+  const createCollector = trpc.auth.createCollector.useMutation();
 
   useEffect(() => {
     if (mutation.isSuccess) {
@@ -142,15 +144,17 @@ function LinkStage({
     }
   }, [mutation.isSuccess, refetch]);
 
+  useEffect(() => {
+    createCollector.mutate();
+  }, []);
+
   return (
     <>
       <div>
-        please put these items in order left to right in your hotbar, pls, okty
+        please type this in chat to verify your account:
         <br />
         <pre>
-          {linkChallenge.map((item) => (
-            <div key={item}>{item}</div>
-          ))}
+          <code>~{linkChallenge}</code>
         </pre>
         {mutation.isError && (
           <div className="text-error">error: {mutation.error.message}</div>
@@ -162,7 +166,7 @@ function LinkStage({
           className="btn-primary btn"
           disabled={mutation.isLoading}
         >
-          {mutation.isLoading ? "verifying..." : "verify"}
+          {mutation.isLoading ? "checking..." : "check"}
         </button>
       </div>
     </>
