@@ -3,6 +3,8 @@ import type { ButtonHandler, ButtonInteraction } from "disploy";
 import { prisma } from "../../server/db/client";
 import { updateRoleMeta } from "../../server/lib/discord";
 import { syncUser } from "../../server/lib/linking";
+import { getDiscordUser } from "../../server/lib/utils";
+import { createStatusEmbed } from "../utils/embeds";
 
 async function handle(
   interaction: ButtonInteraction,
@@ -62,25 +64,21 @@ async function handle(
       .then(() => true)
       .catch(() => false);
 
+    const discordUser = getDiscordUser(application.user.accounts);
+
     return void interaction.editReply({
       embeds: [
-        {
-          title: "Updated user (bot --> tsmp)",
-          description: `Application status: \`${updatedApplication.status}\``,
-          fields: [
-            {
-              name: "Synced user (tsmp <-> mc-server)",
-              value: syncedUser ? "✅" : "❌",
-              inline: true,
-            },
-            {
-              name: "Synced role meta (tsmp <-> discord)",
-              value: syncedRoleMeta ? "✅" : "❌",
-              inline: true,
-            },
-          ],
-          color: syncedUser && syncedRoleMeta ? 0x00ff00 : 0xff0000,
-        },
+        createStatusEmbed({
+          entity: "User Application",
+          description: `Updated application status to ${
+            action === "accept" ? "approved" : "denied"
+          }. for <@${discordUser.id}>`,
+          sideEffects: {
+            "Synced user": syncedUser,
+            "Updated role meta": syncedRoleMeta,
+          },
+          success: action === "accept",
+        }),
       ],
     });
   } catch (error) {
