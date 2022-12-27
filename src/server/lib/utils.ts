@@ -10,7 +10,7 @@ export function getDiscordUser(accounts: Account[]): DiscordAccount {
   const pac = accounts.find((a) => a.provider === "discord");
   if (!pac) throw new Error("No discord account found");
   return {
-    id: pac.id,
+    id: pac.providerAccountId,
     accessToken: pac.access_token,
   };
 }
