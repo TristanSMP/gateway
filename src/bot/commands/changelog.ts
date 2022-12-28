@@ -65,7 +65,9 @@ const ChangeLog: Command = {
         break;
     }
 
-    msg += `\n- ${sideEffects}`;
+    if (sideEffects) {
+      msg += `> ├─ ${sideEffects}`;
+    }
 
     await channel.send({
       content: msg,
