@@ -21,8 +21,6 @@ async function handle(
     });
   }
 
-  interaction.deferReply();
-
   console.log("finding application");
 
   const application = await prisma.application.findUnique({
@@ -87,7 +85,7 @@ async function handle(
 
     console.log("sending response");
 
-    return void interaction.editReply({
+    return void interaction.reply({
       embeds: [
         createStatusEmbed({
           entity: "User Application",
@@ -104,7 +102,7 @@ async function handle(
     });
   } catch (error) {
     console.error(error);
-    return void interaction.editReply({
+    return void interaction.reply({
       content: "An error occurred.",
     });
   }
