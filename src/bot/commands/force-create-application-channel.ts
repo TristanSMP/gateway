@@ -1,4 +1,7 @@
-import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import {
+  ApplicationCommandOptionType,
+  MessageFlags,
+} from "discord-api-types/v10";
 import type { ChatInputInteraction, Command } from "disploy";
 import { createApplicationChannel } from "../../server/lib/discord";
 import { getTSMPUser } from "../../server/lib/utils";
@@ -19,12 +22,10 @@ const ForceCreateApplicationChannel: Command = {
   async run(interaction: ChatInputInteraction) {
     const user = interaction.options.getUser("user");
 
-    interaction.deferReply({ ephemeral: true });
-
     const tsmpUser = await getTSMPUser(user.id);
 
     if (!tsmpUser.application) {
-      return void interaction.editReply({ content: "Application not found." });
+      return void interaction.reply({ content: "Application not found." });
     }
 
     const channel = await createApplicationChannel(
@@ -33,7 +34,10 @@ const ForceCreateApplicationChannel: Command = {
       ApplicationSchema.parse(tsmpUser.application.data)
     );
 
-    interaction.editReply({ content: `Created ${channel}` });
+    interaction.reply({
+      content: `Created ${channel}`,
+      flags: MessageFlags.Ephemeral,
+    });
   },
 };
 

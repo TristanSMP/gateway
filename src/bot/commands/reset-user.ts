@@ -1,4 +1,7 @@
-import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import {
+  ApplicationCommandOptionType,
+  MessageFlags,
+} from "discord-api-types/v10";
 import type { ChatInputInteraction, Command } from "disploy";
 import { prisma } from "../../server/db/client";
 import { getTSMPUser } from "../../server/lib/utils";
@@ -19,12 +22,10 @@ const ResetUser: Command = {
   async run(interaction: ChatInputInteraction) {
     const user = interaction.options.getUser("user");
 
-    interaction.deferReply({ ephemeral: true });
-
     const tsmpUser = await getTSMPUser(user.id);
 
     if (!tsmpUser.application) {
-      return void interaction.editReply({ content: "Application not found." });
+      return void interaction.reply({ content: "Application not found." });
     }
 
     const deletedApplication = await prisma.application
@@ -49,7 +50,7 @@ const ResetUser: Command = {
       .then(() => true)
       .catch(() => false);
 
-    interaction.editReply({
+    interaction.reply({
       embeds: [
         createStatusEmbed({
           entity: "User",
@@ -61,6 +62,7 @@ const ResetUser: Command = {
           success: true,
         }),
       ],
+      flags: MessageFlags.Ephemeral,
     });
   },
 };

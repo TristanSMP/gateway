@@ -1,4 +1,7 @@
-import { ApplicationCommandOptionType } from "discord-api-types/v10";
+import {
+  ApplicationCommandOptionType,
+  MessageFlags,
+} from "discord-api-types/v10";
 import type { ChatInputInteraction, Command } from "disploy";
 import { updateRoleMeta } from "../../server/lib/discord";
 
@@ -17,11 +20,9 @@ const Refresh: Command = {
   async run(interaction: ChatInputInteraction) {
     const user = interaction.options.getUser("user");
 
-    interaction.deferReply({ ephemeral: true });
-
     await updateRoleMeta(user.id);
 
-    interaction.editReply({ content: "Refreshed!" });
+    interaction.reply({ content: "Refreshed!", flags: MessageFlags.Ephemeral });
   },
 };
 
