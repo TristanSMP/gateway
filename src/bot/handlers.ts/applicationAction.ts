@@ -23,6 +23,8 @@ async function handle(
 
   interaction.deferReply();
 
+  console.log("finding application");
+
   const application = await prisma.application.findUnique({
     where: {
       id: applicationId,
@@ -47,6 +49,7 @@ async function handle(
   }
 
   try {
+    console.log("updating application");
     const updatedApplication = await prisma.application.update({
       where: {
         id: application.id,
@@ -60,12 +63,16 @@ async function handle(
       },
     });
 
+    console.log("syncing user");
+
     const syncedUser = await syncUser({
       ...application.user,
       application: updatedApplication,
     })
       .then(() => true)
       .catch(() => false);
+
+    console.log("updating role meta");
 
     const syncedRoleMeta = await updateRoleMeta({
       ...application.user,
@@ -74,7 +81,11 @@ async function handle(
       .then(() => true)
       .catch(() => false);
 
+    console.log("finding discord user");
+
     const discordUser = getDiscordUser(application.user.accounts);
+
+    console.log("sending response");
 
     return void interaction.editReply({
       embeds: [
