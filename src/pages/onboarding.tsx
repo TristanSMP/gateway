@@ -158,11 +158,13 @@ const VerifyMinecraftStage = ({ username }: { username: string }) => {
           </p>
 
           <div className="flex flex-row">
-            <code className="rounded bg-slate-600 p-2 font-mono text-sm">
-              ~{code || "Loading..."}
-            </code>
+            <div className="flex flex-col">
+              <code className="rounded bg-slate-600 p-2 font-mono text-sm">
+                ~{code || "Loading..."}
+              </code>
+              <span className="ml-2 text-sm">make sure to include the ~</span>
+            </div>
 
-            {error && <div className="text-sm text-red-500">{error}</div>}
             <button
               onClick={onCheckPress}
               className="btn-primary btn ml-2"
@@ -175,6 +177,8 @@ const VerifyMinecraftStage = ({ username }: { username: string }) => {
               )}
             </button>
           </div>
+
+          {error && <div className="mt-5 text-sm text-red-500">{error}</div>}
         </div>
       </div>
     </div>

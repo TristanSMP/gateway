@@ -97,7 +97,8 @@ export const onboardingRouter = router({
       if (!player) {
         throw new TRPCError({
           code: "NOT_FOUND",
-          message: "Player not found, make sure you're online",
+          message:
+            "Player not found, make sure you're online on tristansmp.com",
         });
       }
 
