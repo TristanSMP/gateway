@@ -104,7 +104,7 @@ export async function createApplicationChannel(
         {
           id: discordId,
           type: OverwriteType.Member,
-          allow: "0x0000000000000400",
+          allow: `${1 << 10}`,
         },
       ],
     })
