@@ -54,23 +54,22 @@ const ChangeLog: Command = {
 
     if (channel.type !== ChannelType.GuildText) return;
 
-    let msg = "";
-
-    switch (action) {
-      case "add":
-        msg = `+ ${entry}`;
-        break;
-      case "remove":
-        msg = `- ${entry}`;
-        break;
-    }
-
-    if (sideEffects) {
-      msg += `> ├─ ${sideEffects}`;
-    }
-
     await channel.send({
-      content: msg,
+      embeds: [
+        {
+          title: action === "add" ? "Added" : "Removed",
+          description: entry,
+          fields: sideEffects
+            ? [
+                {
+                  name: "Side Effects",
+                  value: sideEffects,
+                },
+              ]
+            : [],
+          color: action === "add" ? 0x00ff00 : 0xff0000,
+        },
+      ],
     });
 
     interaction.reply({ content: "ok", flags: MessageFlags.Ephemeral });
