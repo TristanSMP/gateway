@@ -1,13 +1,12 @@
+import { Analytics } from "@vercel/analytics/react";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { type AppType } from "next/app";
-
-import { trpc } from "../utils/trpc";
-
 import { useRouter } from "next/router";
 import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
 import "../styles/globals.css";
+import { trpc } from "../utils/trpc";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -30,6 +29,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   return (
     <SessionProvider session={session}>
+      <Analytics />
       {wrapApp ? (
         layoutWrapper(<Component {...pageProps} />)
       ) : (

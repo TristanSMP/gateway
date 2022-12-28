@@ -18,6 +18,7 @@
     "@trpc/next": "^10.0.0",
     "@trpc/react-query": "^10.0.0",
     "@trpc/server": "^10.0.0",
+    "@vercel/analytics": "^0.1.6",
     "daisyui": "^2.46.0",
     "discord-api-types": "^0.37.24",
     "disploy": "^0.3.1-dev.1672031750-76cf814.0",
