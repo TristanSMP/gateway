@@ -1,14 +1,13 @@
 import type { Account, Application, User } from "@prisma/client";
 import { ApplicationStatus } from "@prisma/client";
-import type {
-  RESTPostAPIGuildChannelJSONBody,
-  RESTPostAPIGuildChannelResult,
-  RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
-} from "discord-api-types/v10";
 import {
   ButtonStyle,
   ChannelType,
   ComponentType,
+  OverwriteType,
+  RESTPostAPIGuildChannelJSONBody,
+  RESTPostAPIGuildChannelResult,
+  RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
   RouteBases,
   Routes,
 } from "discord-api-types/v10";
@@ -101,6 +100,13 @@ export async function createApplicationChannel(
     >(Routes.guildChannels(env.DISCORD_GUILD_ID), {
       name: `application-${application.id}`,
       parent_id: env.DISCORD_CATEGORY_ID,
+      permission_overwrites: [
+        {
+          id: discordId,
+          type: OverwriteType.Member,
+          allow: "0x0000000000000400",
+        },
+      ],
     })
   );
 
