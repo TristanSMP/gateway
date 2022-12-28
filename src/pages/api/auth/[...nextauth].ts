@@ -20,7 +20,7 @@ export const authOptions: NextAuthOptions = {
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
       authorization:
-        "https://discord.com/api/oauth2/authorize?scope=identify+email+role_connections.write",
+        "https://discord.com/api/oauth2/authorize?scope=identify+role_connections.write",
     }),
   ],
 };
