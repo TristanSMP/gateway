@@ -68,6 +68,7 @@ const ChangeLog: Command = {
               ]
             : [],
           color: action === "add" ? 0x00ff00 : 0xff0000,
+          timestamp: new Date().toISOString(),
         },
       ],
     });
