@@ -24,14 +24,18 @@ export async function UUIDToProfile(uuid: string): Promise<MinecraftProfile> {
 
 export async function UsernameToProfile(
   username: string
-): Promise<MinecraftProfile> {
-  const res = await fetch(
-    `https://api.mojang.com/users/profiles/minecraft/${username}`
-  );
+): Promise<MinecraftProfile | null> {
+  try {
+    const res = await fetch(
+      `https://api.mojang.com/users/profiles/minecraft/${username}`
+    );
 
-  const data = await res.json();
+    const data = await res.json();
 
-  return MinecraftProfileSchema.parse(data);
+    return MinecraftProfileSchema.parse(data);
+  } catch (e) {
+    return null;
+  }
 }
 
 export function looksLikeUUID(input: string) {

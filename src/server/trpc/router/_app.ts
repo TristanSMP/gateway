@@ -1,16 +1,14 @@
 import { router } from "../trpc";
-import { applicationsRouter } from "./applications";
 import { authRouter } from "./auth";
 import { discordRouter } from "./discord";
 import { marketRouter } from "./market";
-import { minecraftRouter } from "./minecraft";
+import { onboardingRouter } from "./onboarding";
 
 export const appRouter = router({
   auth: authRouter,
   market: marketRouter,
-  applications: applicationsRouter,
+  onboarding: onboardingRouter,
   discord: discordRouter,
-  minecraft: minecraftRouter,
 });
 
 export type AppRouter = typeof appRouter;

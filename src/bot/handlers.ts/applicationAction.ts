@@ -1,4 +1,5 @@
 import { ApplicationStatus } from "@prisma/client";
+import { MessageFlags } from "discord-api-types/v10";
 import type { ButtonHandler, ButtonInteraction } from "disploy";
 import { prisma } from "../../server/db/client";
 import { updateRoleMeta } from "../../server/lib/discord";
@@ -6,11 +7,20 @@ import { syncUser } from "../../server/lib/linking";
 import { getDiscordUser } from "../../server/lib/utils";
 import { createStatusEmbed } from "../utils/embeds";
 
+const staff = ["616469681678581781", "97470053615673344"];
+
 async function handle(
   interaction: ButtonInteraction,
   action: "accept" | "deny",
   applicationId: string
 ) {
+  if (!staff.includes(interaction.user.id)) {
+    return void interaction.reply({
+      content: "You are not a staff member.",
+      flags: MessageFlags.Ephemeral,
+    });
+  }
+
   interaction.deferReply();
 
   const application = await prisma.application.findUnique({

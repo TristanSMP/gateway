@@ -92,7 +92,7 @@ function createRoleMeta(
 export async function createApplicationChannel(
   application: Application,
   discordId: string,
-  data: { mcUsername: string; whyJoin: string; howLongWillYouPlay: string }
+  data: { whyJoin: string; howLongWillYouPlay: string }
 ) {
   const channel = DisployApp.channels.constructChannel(
     await DisployApp.rest.post<
@@ -113,10 +113,6 @@ export async function createApplicationChannel(
       {
         title: "Application",
         fields: [
-          {
-            name: "Minecraft Username",
-            value: data.mcUsername,
-          },
           {
             name: "Why do you want to join?",
             value: data.whyJoin,

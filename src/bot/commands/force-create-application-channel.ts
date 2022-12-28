@@ -2,7 +2,7 @@ import { ApplicationCommandOptionType } from "discord-api-types/v10";
 import type { ChatInputInteraction, Command } from "disploy";
 import { createApplicationChannel } from "../../server/lib/discord";
 import { getTSMPUser } from "../../server/lib/utils";
-import { ApplicationSchema } from "../../server/trpc/router/applications";
+import { ApplicationSchema } from "../../server/trpc/router/onboarding";
 
 const ForceCreateApplicationChannel: Command = {
   name: "force-create-application-channel",

@@ -1,8 +1,265 @@
-import { type NextPage } from "next";
+/* eslint-disable @next/next/no-img-element */
+import { TRPCClientError } from "@trpc/client";
+import type { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
-import MinecraftAvatar from "../components/MinecraftAvatar";
+import { useCallback, useEffect, useState } from "react";
 import { trpc } from "../utils/trpc";
+
+const LinkMinecraftStage = ({
+  setUsername,
+  username,
+  next,
+}: {
+  username: string;
+  setUsername: (username: string) => void;
+  next: () => void;
+}) => {
+  const profile = trpc.onboarding.findPlayer.useQuery({
+    mcUsername: username,
+  });
+
+  const [inputUsername, setInputUsername] = useState(username);
+
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-row">
+        <div className="flex w-96 flex-col bg-slate-700 p-8">
+          <h1 className="text-2xl">Link Minecraft</h1>
+
+          <p className="pb-3 text-sm">
+            To link your Minecraft account, please enter your Minecraft username
+            below.
+          </p>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Minecraft username"
+              value={inputUsername}
+              onChange={(e) => setInputUsername(e.target.value)}
+              className="input-bordered input m-5 w-full max-w-xs"
+            />
+
+            <button
+              onClick={() => {
+                setUsername(inputUsername);
+              }}
+              className="btn-primary btn ml-2"
+              disabled={
+                username !== "" &&
+                (inputUsername === username || profile.isLoading)
+              }
+            >
+              {profile.isLoading && username !== "" ? (
+                <progress className="progress w-56"></progress>
+              ) : (
+                "Find"
+              )}
+            </button>
+          </div>
+        </div>
+
+        {username !== "" && (
+          <div className="flex flex-col bg-slate-700 p-8">
+            <h2 className="text-2xl">Profile</h2>
+
+            {profile.isLoading && <div>Loading...</div>}
+
+            {profile.data && (
+              <div className="flex flex-col gap-5">
+                <div className="m-5 flex flex-row gap-5">
+                  <div className="h-20 w-20">
+                    <img
+                      src={profile.data.avatar}
+                      alt="avatar"
+                      className="w-full"
+                    />
+                  </div>
+
+                  <div className="flex flex-col">
+                    <div className="text-xl">{profile.data.name}</div>
+                    <div className="text-sm">{profile.data.id}</div>
+                  </div>
+                </div>
+                <div className="flex flex-col">
+                  <p>
+                    Make sure to join <code>tristansmp.com</code> before
+                    verifying.
+                  </p>
+                  <button className="btn-primary btn ml-2" onClick={next}>
+                    Verify
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+const VerifyMinecraftStage = ({ username }: { username: string }) => {
+  const prepareVerification = trpc.onboarding.prepareVerification.useMutation();
+  const verification = trpc.onboarding.verify.useMutation();
+
+  const [code, setCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+
+  const prepare = useCallback(async () => {
+    try {
+      const data = await prepareVerification.mutateAsync({
+        mcUsername: username,
+      });
+
+      setCode(data.challenge);
+    } catch (e) {
+      if (e instanceof TRPCClientError) {
+        setError(e.message);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [username]);
+
+  const onCheckPress = async () => {
+    try {
+      await verification.mutateAsync({
+        mcUsername: username,
+      });
+    } catch (e) {
+      if (e instanceof TRPCClientError) {
+        if (
+          e.message.includes("Failed to collect challenge") &&
+          e.cause?.cause === "no-collector"
+        ) {
+          prepare();
+          onCheckPress();
+        }
+
+        prepare();
+        setError(e.message);
+      }
+    }
+  };
+
+  useEffect(() => {
+    prepare();
+  }, [prepare]);
+
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-row">
+        <div className="flex w-96 flex-col bg-slate-700 p-8">
+          <h1 className="text-2xl">Verify Minecraft</h1>
+
+          <p className="pb-3 text-sm">
+            To verify your Minecraft account, please enter the code below in the
+            in-game chat.
+          </p>
+
+          <div className="flex flex-row">
+            <code className="rounded bg-slate-600 p-2 font-mono text-sm">
+              ~{code || "Loading..."}
+            </code>
+
+            {error && <div className="text-sm text-red-500">{error}</div>}
+            <button
+              onClick={onCheckPress}
+              className="btn-primary btn ml-2"
+              disabled={verification.isLoading}
+            >
+              {verification.isLoading ? (
+                <progress className="progress w-56"></progress>
+              ) : (
+                "Check"
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const ApplicationStage = ({ refetch }: { refetch: () => void }) => {
+  const [whyJoin, setWhyJoin] = useState("");
+  const [howLongWillYouPlay, setHowLongWillYouPlay] = useState("");
+
+  const submitApplication = trpc.onboarding.submitApplication.useMutation();
+
+  const [error, setError] = useState<string | null>(null);
+
+  const onSubmit = async () => {
+    try {
+      await submitApplication.mutateAsync({
+        whyJoin,
+        howLongWillYouPlay,
+      });
+
+      refetch();
+    } catch (e) {
+      if (e instanceof TRPCClientError) {
+        setError(e.message);
+      }
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-center">
+      <div className="flex flex-row">
+        <div className="flex w-96 flex-col bg-slate-700 p-8">
+          <h1 className="text-2xl">Application</h1>
+
+          <p className="pb-3 text-sm">
+            Please fill out the application below to apply for the server.
+          </p>
+
+          {error && <div className="text-sm text-red-500">{error}</div>}
+
+          <div className="flex flex-col gap-5">
+            <div className="flex flex-col">
+              <label htmlFor="why-join" className="text-sm">
+                Why do you want to join?
+              </label>
+              <textarea
+                id="why-join"
+                className="input"
+                value={whyJoin}
+                onChange={(e) => setWhyJoin(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-col">
+              <label htmlFor="how-long" className="text-sm">
+                How long do you plan on playing?
+              </label>
+              <textarea
+                id="how-long"
+                className="input"
+                value={howLongWillYouPlay}
+                onChange={(e) => setHowLongWillYouPlay(e.target.value)}
+              />
+            </div>
+
+            <div className="flex flex-row">
+              <button
+                onClick={onSubmit}
+                className="btn-primary btn ml-2"
+                disabled={submitApplication.isLoading}
+              >
+                {submitApplication.isLoading ? (
+                  <progress className="progress w-56"></progress>
+                ) : (
+                  "Submit"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const OnBoarding: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -17,160 +274,44 @@ const OnBoarding: NextPage = () => {
     }
   }, [sessionData, sessionStatus]);
 
-  const status = trpc.auth.getStatus.useQuery();
+  const status = trpc.onboarding.status.useQuery();
+  const [username, setUsername] = useState("");
+  const [verifyStage, setVerifyStage] = useState(false);
 
-  while (status.status === "loading") {
-    return <div>loading (root)...</div>;
+  if (sessionStatus === "loading" || status.isLoading) {
+    return <div>Loading...</div>;
   }
 
-  if (status.status === "error") {
-    return <div>error</div>;
+  if (status.isError) {
+    return <div>{status.error.message}</div>;
   }
 
   return (
-    <>
-      <main className="flex h-screen w-full flex-1 flex-col items-center justify-center px-20 text-center">
-        <div className="flex w-1/2 flex-col gap-4">
-          {(() => {
-            if (!status.data.sentApplication) {
-              return <ApplicationStage refetch={status.refetch} />;
-            }
+    <main className="flex min-h-full items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {!status.data.stages.linkMinecraft && !verifyStage && (
+        <LinkMinecraftStage
+          setUsername={setUsername}
+          username={username}
+          next={() => {
+            setVerifyStage(true);
+          }}
+        />
+      )}
 
-            if (!status.data.linked) {
-              return (
-                <LinkStage
-                  linkChallenge={status.data.linkChallenge}
-                  refetch={status.refetch}
-                />
-              );
-            }
+      {!status.data.stages.linkMinecraft && verifyStage && (
+        <VerifyMinecraftStage username={username} />
+      )}
 
-            return <div>you are already linked</div>;
-          })()}
-        </div>
-      </main>
-    </>
+      {status.data.stages.linkMinecraft &&
+        !status.data.stages.doApplication && (
+          <ApplicationStage refetch={() => status.refetch()} />
+        )}
+
+      {status.data.stages.linkMinecraft && status.data.stages.doApplication && (
+        <div>Application submitted!</div>
+      )}
+    </main>
   );
 };
-
-function ApplicationStage({ refetch }: { refetch: () => Promise<unknown> }) {
-  const [username, setUsername] = useState("");
-  const [howLongWillYouPlay, setHowLongWillYouPlay] = useState("");
-  const [why, setWhy] = useState("");
-
-  const mutation = trpc.applications.submitApplication.useMutation();
-
-  useEffect(() => {
-    if (mutation.isSuccess) {
-      refetch();
-    }
-  }, [mutation.isSuccess, refetch]);
-
-  return (
-    <>
-      <h1 className="text-5xl font-bold">Welcome to TristanSMP!</h1>
-
-      <div className="flex flex-col gap-4">
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">What is your Minecraft username?</span>
-          </label>
-          <input
-            type="text"
-            placeholder="twisttaan"
-            className="input-bordered input w-full max-w-xs"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-          />
-          <MinecraftAvatar uuidOrUsername={username} />
-        </div>
-
-        <div className="form-control">
-          <label className="label">
-            <span className="label-text">Why do you want to join?</span>
-          </label>
-          <textarea
-            className="textarea-bordered textarea h-24"
-            placeholder="I want to join because..."
-            value={why}
-            maxLength={1000}
-            onChange={(e) => setWhy(e.target.value)}
-          />
-        </div>
-
-        <div className="form-control w-full max-w-xs">
-          <label className="label">
-            <span className="label-text">How much time will you play?</span>
-          </label>
-          <input
-            type="text"
-            placeholder="1-2 hours a day"
-            className="input-bordered input w-full max-w-xs"
-            value={howLongWillYouPlay}
-            maxLength={50}
-            onChange={(e) => setHowLongWillYouPlay(e.target.value)}
-          />
-        </div>
-      </div>
-      <button
-        onClick={() => {
-          mutation.mutate({
-            howLongWillYouPlay: howLongWillYouPlay,
-            mcUsername: username,
-            whyJoin: why,
-          });
-        }}
-        className="btn-primary btn"
-      >
-        submit application
-      </button>
-    </>
-  );
-}
-
-function LinkStage({
-  linkChallenge,
-  refetch,
-}: {
-  linkChallenge: string;
-  refetch: () => Promise<unknown>;
-}) {
-  const mutation = trpc.auth.verifyLinkChallenge.useMutation();
-  const createCollector = trpc.auth.createCollector.useMutation();
-
-  useEffect(() => {
-    if (mutation.isSuccess) {
-      refetch();
-    }
-  }, [mutation.isSuccess, refetch]);
-
-  useEffect(() => {
-    createCollector.mutate();
-  }, []);
-
-  return (
-    <>
-      <div>
-        please type this in chat to verify your account:
-        <br />
-        <pre>
-          <code>~{linkChallenge}</code>
-        </pre>
-        {mutation.isError && (
-          <div className="text-error">error: {mutation.error.message}</div>
-        )}
-        <button
-          onClick={() => {
-            mutation.mutate();
-          }}
-          className="btn-primary btn"
-          disabled={mutation.isLoading}
-        >
-          {mutation.isLoading ? "checking..." : "check"}
-        </button>
-      </div>
-    </>
-  );
-}
 
 export default OnBoarding;
