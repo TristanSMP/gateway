@@ -126,7 +126,7 @@ export async function createApplicationChannel(
     throw new Error("Channel is not a text channel");
 
   await channel.send({
-    content: `New application from <@${discordId}>`,
+    content: `<@&${env.DISCORD_STAFF_ROLE_ID}> New application from <@${discordId}>.`,
     embeds: [
       {
         title: "Application",
