@@ -14,6 +14,7 @@ import {
   Routes,
 } from "discord-api-types/v10";
 import { DisployApp } from "../../bot/main";
+import { EmbedColor } from "../../bot/utils/embeds";
 import { env } from "../../env/server.mjs";
 import { prisma } from "../db/client";
 import type { MinecraftProfile } from "./minecraft";
@@ -140,6 +141,7 @@ export async function createApplicationChannel(
             value: data.howLongWillYouPlay,
           },
         ],
+        color: EmbedColor.Invisible,
       },
     ],
     components: [
