@@ -1,4 +1,4 @@
-import {
+import type {
   GetServerSidePropsContext,
   InferGetServerSidePropsType,
   NextPage,
@@ -6,54 +6,8 @@ import {
 import Head from "next/head";
 import * as skinview3d from "skinview3d";
 import { z } from "zod";
-import { chunkUUID, UsernameToProfile } from "../../server/lib/minecraft";
-
-const McMMODataSchema = z.object({
-  error: z.literal(false),
-  powerLevel: z.number(),
-  excavation: z.number(),
-  fishing: z.number(),
-  Herbalism: z.number(),
-  mining: z.number(),
-  woodcutting: z.number(),
-  archery: z.number(),
-  axes: z.number(),
-  swords: z.number(),
-  taming: z.number(),
-  unarmed: z.number(),
-  acrobatics: z.number(),
-  alchemy: z.number(),
-  repair: z.number(),
-});
-
-const McMMOGetSchema = z.union([
-  z.object({
-    error: z.literal(true),
-    message: z.string(),
-  }),
-  McMMODataSchema,
-]);
-
-type McMMOData = z.infer<typeof McMMODataSchema>;
-type McMMOGet = z.infer<typeof McMMOGetSchema>;
-
-const skillNameMap: Record<keyof McMMOData, string> = {
-  repair: "Repair",
-  fishing: "Fishing",
-  axes: "Axes",
-  swords: "Swords",
-  powerLevel: "Power Level",
-  alchemy: "Alchemy",
-  Herbalism: "Herbalism",
-  mining: "Mining",
-  acrobatics: "Acrobatics",
-  woodcutting: "Woodcutting",
-  excavation: "Excavation",
-  unarmed: "Unarmed",
-  archery: "Archery",
-  taming: "Taming",
-  error: "Error",
-};
+import { UsernameToProfile } from "../../server/lib/minecraft";
+import { getUserStats, translateSkillNames } from "../../server/lib/pipe";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
@@ -70,18 +24,16 @@ export const getServerSideProps = async (
     };
   }
 
-  const stats = await fetch(
-    `https://pipe.tristansmp.com/players/uuid/${chunkUUID(profile.id)}/mcmmo`
-  );
+  const stats = await getUserStats(profile.id);
 
-  if (stats.status !== 200) {
-    throw new Error("Failed to fetch stats");
+  if (stats.error) {
+    throw new Error("Failed to get stats for user.");
   }
 
   return {
     props: {
       profile,
-      mcmmoData: McMMOGetSchema.parse(await stats.json()),
+      mcmmoData: translateSkillNames(stats),
     },
   };
 };
@@ -144,25 +96,21 @@ const StatsViewer: NextPage<
               <strong>McMMO Stats</strong>
             </div>
             <div className="flex-auto bg-gray-800 p-8 py-1">
-              {Object.keys(mcmmoData).map((s) => {
-                const skill = s as keyof McMMOData;
-
-                if (skill == "error") {
-                  return;
-                }
+              {Object.entries(mcmmoData).map(([skillName, skillValue]) => {
+                if (skillValue === false) return null;
 
                 return (
                   <>
                     <div className="no-gutters flex flex-wrap items-center">
                       <div className="relative max-w-full flex-1 flex-grow px-8 pr-4 pl-4 text-gray-300 lg:order-1">
-                        <p>{skillNameMap[skill]}</p>
+                        <p>{skillName}</p>
                       </div>
                       <div
                         className="relative w-full lg:order-2 lg:flex-1 lg:flex-grow"
                         style={{ fontSize: "90%" }}
                       >
                         <p className="font-mono text-xl font-extrabold text-gray-200">
-                          {mcmmoData[skill] > 0 ? mcmmoData[skill] : "-"}
+                          {skillValue}
                         </p>
                       </div>
                     </div>
