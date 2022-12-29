@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import { showNotification } from "@mantine/notifications";
 import { TRPCClientError } from "@trpc/client";
 import type { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
@@ -86,8 +87,22 @@ const LinkMinecraftStage = ({
                     Make sure to join <code>tristansmp.com</code> before
                     verifying.
                   </p>
-                  <button className="btn-primary btn ml-2" onClick={next}>
-                    Verify
+                  <button
+                    className="btn-primary btn ml-2"
+                    onClick={
+                      profile.data.online
+                        ? next
+                        : () => {
+                            showNotification({
+                              title: "You are not online",
+                              message:
+                                "Please join tristansmp.com before verifying",
+                              color: "red",
+                            });
+                          }
+                    }
+                  >
+                    {profile.data.online ? "Verify" : "Join"}
                   </button>
                 </div>
               </div>

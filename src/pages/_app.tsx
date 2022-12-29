@@ -1,3 +1,5 @@
+import { MantineProvider } from "@mantine/core";
+import { NotificationsProvider } from "@mantine/notifications";
 import { Analytics } from "@vercel/analytics/react";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
@@ -30,11 +32,20 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <Analytics />
-      {wrapApp ? (
-        layoutWrapper(<Component {...pageProps} />)
-      ) : (
-        <Component {...pageProps} />
-      )}
+
+      <MantineProvider
+        theme={{
+          colorScheme: "dark",
+        }}
+      >
+        <NotificationsProvider>
+          {wrapApp ? (
+            layoutWrapper(<Component {...pageProps} />)
+          ) : (
+            <Component {...pageProps} />
+          )}
+        </NotificationsProvider>
+      </MantineProvider>
     </SessionProvider>
   );
 };

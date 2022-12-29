@@ -18,7 +18,7 @@ export const onboardingRouter = router({
         mcUsername: z.string().max(48),
       })
     )
-    .query(async ({ input: { mcUsername } }) => {
+    .query(async ({ ctx, input: { mcUsername } }) => {
       const profile = await UsernameToProfile(mcUsername);
 
       if (!profile) {
@@ -28,9 +28,12 @@ export const onboardingRouter = router({
         });
       }
 
+      const player = await ctx.elytra.players.get(mcUsername);
+
       return {
         ...profile,
         avatar: `https://crafatar.com/avatars/${profile.id}?size=128&overlay`,
+        online: player ? true : false,
       };
     }),
   prepareVerification: protectedProcedure
