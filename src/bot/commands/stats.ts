@@ -37,7 +37,7 @@ const UserStats: Command = {
     interaction.reply({
       embeds: [
         {
-          title: `TSMP stats for ${user.username}`,
+          description: `TSMP stats for ${user.username}`,
           fields: getStatsEmbedFields(translateSkillNames(stats)),
         },
       ],
