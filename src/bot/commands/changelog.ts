@@ -5,6 +5,7 @@ import {
 } from "discord-api-types/v10";
 import type { ChatInputInteraction, Command } from "disploy";
 import { env } from "../../env/server.mjs";
+import { EmbedColor } from "../utils/embeds";
 
 const ChangeLogChannel = "1057651322901495859";
 
@@ -67,7 +68,7 @@ const ChangeLog: Command = {
                 },
               ]
             : [],
-          color: action === "add" ? 0x00ff00 : 0xff0000,
+          color: action === "add" ? EmbedColor.Green : EmbedColor.Red,
           timestamp: new Date().toISOString(),
         },
       ],

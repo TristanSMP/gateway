@@ -1,5 +1,11 @@
 import type { APIEmbed } from "discord-api-types/v10";
 
+export enum EmbedColor {
+  Red = 0xff0000,
+  Green = 0x00ff00,
+  Invisible = 0x2f3136,
+}
+
 export interface Status {
   entity: string;
   description: string;
@@ -18,6 +24,6 @@ export const createStatusEmbed = (status: Status): APIEmbed => {
       value: value ? "✅" : "❌",
       inline: true,
     })),
-    color: status.success ? 0x00ff00 : 0xff0000,
+    color: status.success ? EmbedColor.Green : EmbedColor.Red,
   };
 };

@@ -6,6 +6,7 @@ import {
   translateSkillNames,
 } from "../../server/lib/pipe";
 import { getTSMPUser } from "../../server/lib/utils";
+import { EmbedColor } from "../utils/embeds";
 
 const UserStats: Command = {
   name: "stats",
@@ -34,11 +35,17 @@ const UserStats: Command = {
       return void interaction.reply({ content: "Stats not found." });
     }
 
+    console.log(getStatsEmbedFields(translateSkillNames(stats)));
+
     interaction.reply({
       embeds: [
         {
           description: `TSMP stats for ${user.username}`,
           fields: getStatsEmbedFields(translateSkillNames(stats)),
+          thumbnail: {
+            url: `https://crafatar.com/avatars/${tsmpUser.minecraftUUID}?overlay`,
+          },
+          color: EmbedColor.Invisible,
         },
       ],
     });

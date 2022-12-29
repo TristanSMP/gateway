@@ -63,6 +63,15 @@ export async function getUserStats(uuid: string): Promise<GetStatsJSONResult> {
   return McMMOGetSchema.parse(json);
 }
 
+export function translateSkillNames(stats: APIStats): APIStats {
+  return Object.fromEntries(
+    Object.entries(stats).map(([key, value]) => [
+      skillNameMap[key as keyof APIStats],
+      value,
+    ])
+  ) as APIStats;
+}
+
 export function getStatsEmbedFields(
   stats: GetStatsJSONResult
 ): APIEmbedField[] {
@@ -76,18 +85,10 @@ export function getStatsEmbedFields(
   }
 
   return Object.entries(stats)
-    .filter(([key]) => key !== "error")
+    .filter(([, v]) => v !== false)
     .map(([key, value]) => ({
-      name: skillNameMap[key as keyof APIStats],
+      name: key,
       value: value.toString(),
+      inline: true,
     }));
-}
-
-export function translateSkillNames(stats: APIStats): APIStats {
-  return Object.fromEntries(
-    Object.entries(stats).map(([key, value]) => [
-      skillNameMap[key as keyof APIStats],
-      value,
-    ])
-  ) as APIStats;
 }
