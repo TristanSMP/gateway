@@ -4,7 +4,7 @@ import type {
   NextPage,
 } from "next";
 import Head from "next/head";
-import * as skinview3d from "skinview3d";
+import { SkinViewer, WalkingAnimation } from "skinview3d";
 import { z } from "zod";
 import { UsernameToProfile } from "../../server/lib/minecraft";
 import { getUserStats, translateSkillNames } from "../../server/lib/pipe";
@@ -80,11 +80,12 @@ const StatsViewer: NextPage<
                 if (!canvas?.width) return;
                 if (!canvas?.height) return;
 
-                const skinViewer = new skinview3d.SkinViewer({
+                new SkinViewer({
                   canvas: canvas,
                   width: 300,
                   height: 400,
                   skin: `https://crafatar.com/skins/${uuid}`,
+                  animation: new WalkingAnimation(),
                 });
               }}
             />
