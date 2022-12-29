@@ -27,6 +27,7 @@ export const serverSchema = z.object({
   DISCORD_PUBLIC_KEY: z.string(),
   DISCORD_GUILD_ID: z.string(),
   DISCORD_CATEGORY_ID: z.string(),
+  DISCORD_STAFF_ROLE_ID: z.string(),
 });
 
 /**

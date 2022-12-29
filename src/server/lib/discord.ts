@@ -1,13 +1,15 @@
 import type { Account, Application, User } from "@prisma/client";
 import { ApplicationStatus } from "@prisma/client";
+import type {
+  RESTPostAPIGuildChannelJSONBody,
+  RESTPostAPIGuildChannelResult,
+  RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
+} from "discord-api-types/v10";
 import {
   ButtonStyle,
   ChannelType,
   ComponentType,
   OverwriteType,
-  RESTPostAPIGuildChannelJSONBody,
-  RESTPostAPIGuildChannelResult,
-  RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
   RouteBases,
   Routes,
 } from "discord-api-types/v10";
@@ -112,8 +114,7 @@ export async function createApplicationChannel(
           deny: `${1 << 10}`,
         },
         {
-          // TODO(tristan): make this an env var
-          id: "1054688510784839751",
+          id: env.DISCORD_STAFF_ROLE_ID,
           type: OverwriteType.Role,
           allow: `${1 << 10}`,
         },
