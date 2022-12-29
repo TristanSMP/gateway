@@ -1,4 +1,5 @@
 import ChangeLog from "./changelog";
+import DebugUser from "./debug-user";
 import ForceCreateApplicationChannel from "./force-create-application-channel";
 import Ping from "./ping";
 import Refresh from "./refresh";
@@ -10,4 +11,5 @@ export const Commands = [
   ForceCreateApplicationChannel,
   ResetUser,
   ChangeLog,
+  DebugUser,
 ];
