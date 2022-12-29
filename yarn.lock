@@ -1860,10 +1860,10 @@ discord-api-types@^0.37.24:
   resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.37.24.tgz#f3ee0ad6b2b70925b5225f9beac6e24bc4de6e46"
   integrity sha512-1+Fb4huJCihdbkJLcq2p7nBmtlmAryNwjefT8wwJnL8c7bc7WA87Oaa5mbLe96QvZyfwnwRCDX40H0HhcVV50g==
 
-disploy@^0.3.1-dev.1672031750-76cf814.0:
-  version "0.3.1-dev.1672031750-76cf814.0"
-  resolved "https://registry.yarnpkg.com/disploy/-/disploy-0.3.1-dev.1672031750-76cf814.0.tgz#20eb3a8fde403da092af957bd12256bc7ed3a3a9"
-  integrity sha512-mjgsJPGPFyfs1lx8TDfQ5wZMZloMYQsd9ruNNKlpwTjA/dt3RJN02Q0eSTWkNH+UHuqwpBysHnWXXrRtlNBrMA==
+disploy@^0.3.1-dev.1672287841-5be04e2.0:
+  version "0.3.1-dev.1672287841-5be04e2.0"
+  resolved "https://registry.yarnpkg.com/disploy/-/disploy-0.3.1-dev.1672287841-5be04e2.0.tgz#4138bf033d511c2d1bf2aacdcf8653bc5f0cd85b"
+  integrity sha512-J28zGkC/OiSMr2HYpux3eCwfMeNe/U/hXgleY7AYqbgn8jHGxVA/PopmMcjLl9AmYd/1AMiuGQfvEmGo0C+UQw==
   dependencies:
     "@disploy/rest" "^1.0.0"
     chokidar "^3.5.3"
