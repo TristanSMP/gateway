@@ -58,6 +58,7 @@ model User {
   itemsOnMarket AuctionedItem[]
   isBotAdmin    Boolean         @default(false)
   application   Application?
+  Image         Image[]
 }
 
 enum ApplicationStatus {
@@ -126,4 +127,27 @@ model ItemType {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum ReviewStatus {
+  Pending
+  Approved
+  Denied
+}
+
+model Image {
+  id String @id @default(cuid())
+
+  creator   User   @relation(fields: [creatorId], references: [id])
+  creatorId String
+
+  url String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviewStatus ReviewStatus @default(Pending)
+  reviewer     String?
+
+  @@index([creatorId])
 }
