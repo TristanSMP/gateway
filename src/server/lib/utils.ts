@@ -27,6 +27,7 @@ export async function getTSMPUser(discordUserId: string) {
       user: {
         include: {
           application: true,
+          accounts: true,
         },
       },
     },

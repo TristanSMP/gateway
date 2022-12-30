@@ -4,6 +4,7 @@ import {
 } from "discord-api-types/v10";
 import type { ChatInputInteraction, Command } from "disploy";
 import { prisma } from "../../server/db/client";
+import { updateRoleMeta } from "../../server/lib/discord";
 import { getTSMPUser } from "../../server/lib/utils";
 import { createStatusEmbed } from "../utils/embeds";
 
@@ -50,6 +51,10 @@ const ResetUser: Command = {
       .then(() => true)
       .catch(() => false);
 
+    const roleMeta = await updateRoleMeta(tsmpUser)
+      .then(() => true)
+      .catch(() => false);
+
     interaction.reply({
       embeds: [
         createStatusEmbed({
@@ -58,6 +63,7 @@ const ResetUser: Command = {
           sideEffects: {
             "Deleted Application": deletedApplication,
             "Removed Link": removeLink,
+            "Updated Role Meta": roleMeta,
           },
           success: true,
           actioner: interaction.user,
