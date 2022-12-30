@@ -60,6 +60,7 @@ const ResetUser: Command = {
             "Removed Link": removeLink,
           },
           success: true,
+          actioner: interaction.user,
         }),
       ],
       flags: MessageFlags.Ephemeral,

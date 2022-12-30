@@ -96,6 +96,7 @@ async function handle(
             "Updated role meta": syncedRoleMeta,
           },
           success: action === "accept",
+          actioner: interaction.user,
         }),
       ],
     });
