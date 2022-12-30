@@ -1,10 +1,10 @@
 import { ApplicationStatus } from "@prisma/client";
+import type { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
 import {
   ApplicationCommandOptionType,
   ButtonStyle,
   ComponentType,
   MessageFlags,
-  RESTPostAPIChannelMessageJSONBody,
   Routes,
 } from "discord-api-types/v10";
 import type { ChatInputInteraction, Command } from "disploy";
