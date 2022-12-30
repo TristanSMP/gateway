@@ -1,4 +1,4 @@
-import { InferGetStaticPropsType, type NextPage } from "next";
+import type { InferGetStaticPropsType, NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { prisma } from "../server/db/client";
@@ -34,19 +34,18 @@ const Home: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
 }) => {
   return (
     <>
-      <div className="hero min-h-screen bg-base-200">
-        <div
-          className="hero-content flex-col lg:flex-row-reverse"
-          style={{ gap: "1.5rem" }}
-        >
-          <Image
-            className="ml-6 max-w-xl rounded-lg shadow-2xl"
-            src={image}
-            width={1920}
-            height={1080}
-            alt="Random Image"
-          />
-          <div>
+      <div className="hero min-h-screen bg-base-300">
+        <div className="hero-content -translate-y-24 flex-col gap-6 lg:flex-row-reverse lg:gap-12">
+          <div className="max-w-lg overflow-hidden">
+            <Image
+              className="rounded-lg object-cover shadow-2xl"
+              src={image}
+              width={1920}
+              height={1080}
+              alt="Random Image"
+            />
+          </div>
+          <div className="ml-1 self-start lg:ml-0 lg:self-center">
             <h1 className="text-5xl font-bold">Tristan SMP</h1>
             <p className="py-6">A modern technical SMP for everyone.</p>
             <Link href="/onboarding" className="btn-primary btn">
