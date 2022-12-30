@@ -6,9 +6,14 @@ import { UsernameToProfile } from "../../lib/minecraft";
 import { getDiscordUser } from "../../lib/utils";
 import { protectedProcedure, router } from "../trpc";
 
+export const applicationLengths = {
+  whyJoin: 1000,
+  howLongWillYouPlay: 50,
+} as const;
+
 export const ApplicationSchema = z.object({
-  whyJoin: z.string().max(1000),
-  howLongWillYouPlay: z.string().max(50),
+  whyJoin: z.string().max(applicationLengths.whyJoin),
+  howLongWillYouPlay: z.string().max(applicationLengths.howLongWillYouPlay),
 });
 
 export const onboardingRouter = router({
@@ -224,6 +229,7 @@ export const onboardingRouter = router({
         linkMinecraft: !!user.minecraftUUID,
         doApplication: !!user.application,
       },
+      applicationLengths,
     };
   }),
 });

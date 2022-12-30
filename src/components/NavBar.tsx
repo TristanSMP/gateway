@@ -1,15 +1,67 @@
 import Link from "next/link";
 import { ProfileIcon } from "./ProfileIcon";
+import { Bars3Icon } from "@heroicons/react/24/outline";
+import { GitHubRepo } from "../utils/Constants";
+
+const links: { name: string; href: string; newTab: boolean }[] = [
+  {
+    name: "Apply",
+    href: "/onboarding",
+    newTab: false,
+  },
+  {
+    name: "Discord",
+    href: "/discord",
+    newTab: true,
+  },
+  {
+    name: "GitHub",
+    href: GitHubRepo,
+    newTab: true,
+  },
+];
 
 export const NavBar = () => {
   return (
     <div className="navbar bg-base-100">
-      <div className="flex-1">
+      <div className="navbar-start">
+        <div className="dropdown">
+          <label tabIndex={0} className="btn-ghost btn p-2 lg:hidden">
+            <Bars3Icon className="h-6 w-6" />
+          </label>
+          <ul
+            tabIndex={0}
+            className="dropdown-content menu rounded-box menu-compact mt-3 w-52 bg-base-200 p-2 shadow-sm"
+          >
+            {links.map((link) => (
+              <li key={`${link.name}:${link.href}`}>
+                <Link
+                  href={link.href}
+                  target={link.newTab ? "_blank" : undefined}
+                >
+                  {link.name}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
         <Link className="btn-ghost btn text-xl normal-case" href="/">
           TristanSMP
         </Link>
+        <ul className="menu menu-horizontal hidden px-1 lg:flex">
+          {links.map((link) => (
+            <li key={`${link.name}:${link.href}`}>
+              <Link
+                href={link.href}
+                target={link.newTab ? "_blank" : undefined}
+              >
+                {link.name}
+              </Link>
+            </li>
+          ))}
+        </ul>
       </div>
-      <div className="flex-none gap-2">
+      <div className="navbar-end">
         <ProfileIcon />
       </div>
     </div>
