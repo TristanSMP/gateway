@@ -18,7 +18,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
     return (
       <>
         <NavBar />
-        <main className="flex h-screen flex-1 flex-col">{Comp}</main>
+        <main className="flex min-h-screen flex-1 flex-col">{Comp}</main>
         <Footer />
       </>
     );

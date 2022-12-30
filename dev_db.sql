@@ -1,3 +1,3 @@
-CREATE USER tsmp WITH PASSWORD 'tsmp';
-CREATE DATABASE tsmp OWNER tsmp;
-GRANT ALL PRIVILEGES ON DATABASE tsmp TO tsmp;
+CREATE USER 'tsmp'@'localhost' WITH PASSWORD 'tsmp';
+CREATE DATABASE tsmp;
+GRANT ALL PRIVILEGES ON tsmp.* TO 'tsmp'@'localhost';

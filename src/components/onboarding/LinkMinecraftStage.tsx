@@ -1,0 +1,119 @@
+import { showNotification } from "@mantine/notifications";
+import React, { useState } from "react";
+import { trpc } from "../../utils/trpc";
+import JoinSteps from "../../components/onboarding/JoinSteps";
+
+const LinkMinecraftStage: React.FC<{
+  username: string;
+  setUsername: (username: string) => void;
+  next: () => void;
+}> = ({ setUsername, username, next }) => {
+  const profile = trpc.onboarding.findPlayer.useQuery({
+    mcUsername: username,
+  });
+
+  const [inputUsername, setInputUsername] = useState(username);
+
+  return (
+    <div>
+      <div className="flex flex-col rounded-md bg-slate-700 lg:flex-row">
+        <div className="flex flex-col rounded-md p-4 sm:p-6 md:p-8">
+          <h1 className="text-2xl">Link Minecraft</h1>
+
+          <p className="mt-1 text-sm">
+            To link your Minecraft account, please enter your Minecraft username
+            below.
+          </p>
+
+          <div>
+            <input
+              type="text"
+              placeholder="Minecraft username"
+              value={inputUsername}
+              onChange={(e) => setInputUsername(e.target.value)}
+              className="input-bordered input mt-5 -ml-0.5 w-full max-w-xs"
+            />
+
+            <div className="mt-2 mb-5 text-xs opacity-60">
+              Only Java Edition accounts are supported.
+            </div>
+
+            <button
+              onClick={() => {
+                setUsername(inputUsername);
+              }}
+              className={`btn-primary btn ${
+                profile.isLoading && username !== "" ? "loading" : ""
+              }`}
+              disabled={
+                username !== "" &&
+                (inputUsername === username || profile.isLoading)
+              }
+            >
+              Find
+            </button>
+          </div>
+        </div>
+
+        {username !== "" && (
+          <div className="flex flex-col rounded-md p-4 sm:p-6 md:p-8">
+            <h2 className="text-2xl">Profile</h2>
+
+            {profile.isLoading && <div>Loading...</div>}
+
+            {profile.data && (
+              <div className="flex flex-col gap-5">
+                <div className="ml-0.5 mt-5 mb-2 flex flex-row items-center gap-5">
+                  <div className="">
+                    <div className="h-12 w-12">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={profile.data.avatar}
+                        alt="avatar"
+                        className="w-full"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="flex flex-col">
+                    <div className="text-xl">{profile.data.name}</div>
+                    <div className="text-sm">{profile.data.id}</div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      {username !== "" && profile.data && (
+        <div className="pt-8">
+          <h2 className="mb-4 text-2xl">Verify</h2>
+          <JoinSteps />
+          <p className="mt-4">
+            When you&apos;ve joined TristanSMP, click the button below to
+            continue.
+          </p>
+          <button
+            className="btn-primary btn mt-3"
+            onClick={
+              profile.data.online
+                ? next
+                : () => {
+                    console.log(profile.data);
+                    showNotification({
+                      title: "You are not online",
+                      message: "Please join tristansmp.com before verifying",
+                      color: "red",
+                    });
+                  }
+            }
+          >
+            Continue
+          </button>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default LinkMinecraftStage;

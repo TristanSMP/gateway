@@ -22,5 +22,12 @@ const config = {
   images: {
     domains: ["cdn.discordapp.com"],
   },
+  redirects: async () => [
+    {
+      source: "/discord",
+      destination: "https://discord.gg/yzNjMhzw8s",
+      permanent: true,
+    },
+  ],
 };
 export default withNextra(config);
