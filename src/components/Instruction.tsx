@@ -1,4 +1,4 @@
-const Step: React.FC<{ step: string; children?: React.ReactNode }> = ({
+const Instruction: React.FC<{ step: string; children?: React.ReactNode }> = ({
   step,
   children,
 }) => (
@@ -10,4 +10,4 @@ const Step: React.FC<{ step: string; children?: React.ReactNode }> = ({
   </div>
 );
 
-export default Step;
+export default Instruction;
