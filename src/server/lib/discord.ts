@@ -1,17 +1,20 @@
 import type { Account, Application, User } from "@prisma/client";
 import { ApplicationStatus } from "@prisma/client";
+import type {
+  RESTPostAPIGuildChannelJSONBody,
+  RESTPostAPIGuildChannelResult,
+  RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
+} from "discord-api-types/v10";
 import {
   ButtonStyle,
   ChannelType,
   ComponentType,
   OverwriteType,
-  RESTPostAPIGuildChannelJSONBody,
-  RESTPostAPIGuildChannelResult,
-  RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
   RouteBases,
   Routes,
 } from "discord-api-types/v10";
 import { DisployApp } from "../../bot/main";
+import { EmbedColor } from "../../bot/utils/embeds";
 import { env } from "../../env/server.mjs";
 import { prisma } from "../db/client";
 import type { MinecraftProfile } from "./minecraft";
@@ -112,8 +115,7 @@ export async function createApplicationChannel(
           deny: `${1 << 10}`,
         },
         {
-          // TODO(tristan): make this an env var
-          id: "1054688510784839751",
+          id: env.DISCORD_STAFF_ROLE_ID,
           type: OverwriteType.Role,
           allow: `${1 << 10}`,
         },
@@ -125,7 +127,7 @@ export async function createApplicationChannel(
     throw new Error("Channel is not a text channel");
 
   await channel.send({
-    content: `New application from <@${discordId}>`,
+    content: `<@&${env.DISCORD_REVIEW_ROLE_ID}> New application from <@${discordId}>.`,
     embeds: [
       {
         title: "Application",
@@ -139,6 +141,7 @@ export async function createApplicationChannel(
             value: data.howLongWillYouPlay,
           },
         ],
+        color: EmbedColor.Invisible,
       },
     ],
     components: [

@@ -1,4 +1,11 @@
 import type { APIEmbed } from "discord-api-types/v10";
+import type { User } from "disploy";
+
+export enum EmbedColor {
+  Red = 0xff0000,
+  Green = 0x00ff00,
+  Invisible = 0x2f3136,
+}
 
 export interface Status {
   entity: string;
@@ -7,6 +14,7 @@ export interface Status {
     [key: string]: boolean;
   };
   success: boolean;
+  actioner: User;
 }
 
 export const createStatusEmbed = (status: Status): APIEmbed => {
@@ -18,6 +26,9 @@ export const createStatusEmbed = (status: Status): APIEmbed => {
       value: value ? "✅" : "❌",
       inline: true,
     })),
-    color: status.success ? 0x00ff00 : 0xff0000,
+    color: status.success ? EmbedColor.Green : EmbedColor.Red,
+    footer: {
+      text: `action made by ${status.actioner.username}#${status.actioner.discriminator} (${status.actioner.id})`,
+    },
   };
 };

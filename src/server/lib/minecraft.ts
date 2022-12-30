@@ -43,3 +43,10 @@ export function looksLikeUUID(input: string) {
     /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i
   );
 }
+
+export function chunkUUID(uuid: string) {
+  return uuid.replace(
+    /(\w{8})(\w{4})(\w{4})(\w{4})(\w{12})/i,
+    "$1-$2-$3-$4-$5"
+  );
+}
