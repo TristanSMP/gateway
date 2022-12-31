@@ -109,7 +109,7 @@ model AuctionedItem {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  type    ItemType? @relation(fields: [typeb64], references: [base64])
+  type    ItemType? @relation(fields: [typeb64], references: [b64key])
   typeb64 String?
 
   @@index([sellerId])
@@ -119,9 +119,13 @@ model AuctionedItem {
 // The item type that is being auctioned
 // There can be multiple auctioned items of the same type from different or the same sellers
 model ItemType {
-  base64 String @id
-  slug   String @unique
-  name   String
+  id           String @id @default(cuid())
+  namespacedId String
+
+  base64 String @db.Text
+  b64key String @unique
+
+  name String
 
   stock AuctionedItem[] // Items that are currently up for auction
 
