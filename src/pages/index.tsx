@@ -1,3 +1,4 @@
+import { ReviewStatus } from "@prisma/client";
 import type { InferGetStaticPropsType, NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
@@ -13,6 +14,9 @@ export const getStaticProps = async () => {
     orderBy: {
       createdAt: "desc",
     },
+    where: {
+      reviewStatus: ReviewStatus.Approved
+    }
   });
 
   const image = randomImage[Math.floor(Math.random() * randomImage.length)];
