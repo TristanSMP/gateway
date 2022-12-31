@@ -28,7 +28,7 @@
     "daisyui": "^2.46.0",
     "discord-api-types": "^0.37.24",
     "disploy": "^0.4.0-dev.1672361862-6dea380.0",
-    "elytra": "^1.5.0",
+    "elytra": "^1.5.1",
     "next": "13.0.2",
     "next-auth": "^4.18.3",
     "nextra": "^2.0.1",
