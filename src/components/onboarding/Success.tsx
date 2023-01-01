@@ -12,7 +12,8 @@ const Success: React.FC = () => {
           </h1>
 
           <p className="mt-1 text-sm">
-            You can check your application status in the TristanSMP{" "}
+            You can check your application status in your application channel of
+            the TristanSMP{" "}
             <a href="/discord" className="link">
               Discord server
             </a>

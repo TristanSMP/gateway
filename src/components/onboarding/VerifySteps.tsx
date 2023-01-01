@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Instruction from "../Instruction";
-import imgVerifyStep2 from "../../../public/assets/images/onboarding-verify-step-2.png";
+import imgMinecraftVerifyCode from "../../../public/assets/images/onboarding/minecraft-verify-code.png";
 
 const VerifySteps: React.FC<{ code: string }> = ({ code }) => {
   return (
@@ -29,7 +29,7 @@ const VerifySteps: React.FC<{ code: string }> = ({ code }) => {
         </span>
         <div className="mt-1 max-w-[24rem]">
           <Image
-            src={imgVerifyStep2}
+            src={imgMinecraftVerifyCode}
             alt="~YOUR_CODE_HERE entered into the chat"
             className="rounded-md"
           />
