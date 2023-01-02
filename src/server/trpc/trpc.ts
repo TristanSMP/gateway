@@ -32,4 +32,72 @@ export const publicProcedure = t.procedure;
 /**
  * Protected procedure (needs client to be logged in)
  **/
-export const protectedProcedure = t.procedure.use(isAuthed);
+export const protectedProcedure = t.procedure
+  .use(isAuthed)
+  .use(async ({ ctx, next }) => {
+    const user = await ctx.prisma.user.findUnique({
+      where: {
+        id: ctx.session.user.id,
+      },
+      include: {
+        application: true,
+        accounts: true,
+      },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: { ...ctx.session, user: ctx.session.user },
+        user,
+      },
+    });
+  });
+
+/**
+ * playerProcedure (needs client to be logged in and have a minecraft account linked)
+ */
+export const playerProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  if (!ctx.user.minecraftUUID) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "You must have a Minecraft account linked to do this",
+    });
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+      user: { ...ctx.user, minecraftUUID: ctx.user.minecraftUUID },
+    },
+  });
+});
+
+/**
+ * onlinePlayerProcedure (needs client to be logged in and have a minecraft account linked that's online)
+ */
+export const onlinePlayerProcedure = playerProcedure.use(
+  async ({ ctx, next }) => {
+    const player = await ctx.elytra.players.get(ctx.user.minecraftUUID);
+
+    if (!player) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "You must be online to do this",
+      });
+    }
+
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: { ...ctx.session, user: ctx.session.user },
+        player,
+      },
+    });
+  }
+);

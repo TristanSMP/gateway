@@ -4,7 +4,7 @@ import { z } from "zod";
 import { sha256 } from "../../../utils/hashing";
 import { ItemTextures } from "../../lib/textures";
 import type { Inventory, Item } from "../../types";
-import { protectedProcedure, router } from "../trpc";
+import { onlinePlayerProcedure, protectedProcedure, router } from "../trpc";
 
 const parseItem = (item: ItemStack, index: number): Item => {
   return {
@@ -36,8 +36,8 @@ const parseItems = (items: (ItemStack | null)[]): Inventory => {
 };
 
 export const marketRouter = router({
-  discoveredItemTypes: protectedProcedure.query(async ({ ctx }) => {
-    const discoveredItems = await ctx.prisma.itemType.findMany();
+  discoveredItemTypes: protectedProcedure.query(async ({ ctx: { prisma } }) => {
+    const discoveredItems = await prisma.itemType.findMany();
 
     return discoveredItems.map((item) => {
       return {
@@ -50,112 +50,68 @@ export const marketRouter = router({
       };
     });
   }),
-  inventory: protectedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.prisma.user.findUnique({
-      where: {
-        id: ctx.session.user.id,
-      },
-    });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    if (!user.minecraftUUID) {
-      throw new TRPCError({
-        code: "BAD_REQUEST",
-        message: "You must link your Minecraft account",
-      });
-    }
-
-    const player = await ctx.elytra.players.get(user.minecraftUUID);
-
-    if (!player) {
-      throw new Error("Player not found");
-    }
-
+  inventory: onlinePlayerProcedure.query(async ({ ctx: { player } }) => {
     const items = parseItems(player.inventory.items);
 
     return items;
   }),
-  sellItem: protectedProcedure
+  sellItem: onlinePlayerProcedure
     .input(
       z.object({
         index: z.number(),
         price: z.number().positive().int().min(1),
       })
     )
-    .mutation(async ({ ctx, input: { index, price } }) => {
-      const user = await ctx.prisma.user.findUnique({
-        where: {
-          id: ctx.session.user.id,
-        },
-      });
+    .mutation(
+      async ({ ctx: { user, player, prisma }, input: { index, price } }) => {
+        const item = player.inventory.items[index];
 
-      if (!user) {
-        throw new Error("User not found");
-      }
+        if (!item) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Item not found",
+          });
+        }
 
-      if (!user.minecraftUUID) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "You must link your Minecraft account",
-        });
-      }
+        await player.inventory.removeItem(index);
 
-      const player = await ctx.elytra.players.get(user.minecraftUUID);
+        const hashedItem = sha256(item.base64);
 
-      if (!player) {
-        throw new Error("Player not found");
-      }
+        try {
+          const itemType = await prisma.itemType.upsert({
+            where: {
+              b64key: hashedItem,
+            },
+            create: {
+              base64: item.base64,
+              b64key: hashedItem,
+              name: item.name,
+              namespacedId: item.id,
+            },
+            update: {},
+          });
 
-      const item = player.inventory.items[index];
-
-      if (!item) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Item not found",
-        });
-      }
-
-      await player.inventory.removeItem(index);
-
-      const hashedItem = sha256(item.base64);
-
-      try {
-        const itemType = await ctx.prisma.itemType.upsert({
-          where: {
-            b64key: hashedItem,
-          },
-          create: {
-            base64: item.base64,
-            b64key: hashedItem,
-            name: item.name,
-            namespacedId: item.id,
-          },
-          update: {},
-        });
-
-        await ctx.prisma.auctionedItem.create({
-          data: {
-            price,
-            seller: {
-              connect: {
-                id: user.id,
+          await prisma.auctionedItem.create({
+            data: {
+              price,
+              seller: {
+                connect: {
+                  id: user.id,
+                },
+              },
+              type: {
+                connect: {
+                  b64key: itemType.b64key,
+                },
               },
             },
-            type: {
-              connect: {
-                b64key: itemType.b64key,
-              },
-            },
-          },
-        });
+          });
 
-        return true;
-      } catch (error) {
-        await player.inventory.addItem(item);
-        throw error;
+          return true;
+        } catch (error) {
+          await player.inventory.addItem(item);
+          throw error;
+        }
       }
-    }),
+    ),
 });

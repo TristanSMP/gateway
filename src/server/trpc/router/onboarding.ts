@@ -57,24 +57,14 @@ export const onboardingRouter = router({
         });
       }
 
-      const user = await ctx.prisma.user.findUnique({
-        where: {
-          id: ctx.session.user.id,
-        },
-      });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
-      let challenge = user.linkChallenge;
+      let challenge = ctx.user.linkChallenge;
 
       if (!challenge) {
         challenge = generateLinkChallenge();
 
         await ctx.prisma.user.update({
           where: {
-            id: user.id,
+            id: ctx.user.id,
           },
           data: {
             linkChallenge: challenge,
@@ -110,16 +100,6 @@ export const onboardingRouter = router({
         });
       }
 
-      const user = await ctx.prisma.user.findUnique({
-        where: {
-          id: ctx.session.user.id,
-        },
-      });
-
-      if (!user) {
-        throw new Error("User not found");
-      }
-
       const challenge = await player.chat.checkCollector();
 
       if (challenge.status !== "collected") {
@@ -130,7 +110,7 @@ export const onboardingRouter = router({
         });
       }
 
-      if (challenge.result !== user.linkChallenge) {
+      if (challenge.result !== ctx.user.linkChallenge) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Challenge is incorrect",
@@ -139,7 +119,7 @@ export const onboardingRouter = router({
 
       await ctx.prisma.user.update({
         where: {
-          id: user.id,
+          id: ctx.user.id,
         },
         data: {
           linkChallenge: null,
@@ -154,76 +134,54 @@ export const onboardingRouter = router({
 
   submitApplication: protectedProcedure
     .input(ApplicationSchema)
-    .mutation(async ({ ctx, input: { whyJoin, howLongWillYouPlay } }) => {
-      const user = await ctx.prisma.user.findUnique({
-        where: {
-          id: ctx.session.user.id,
-        },
-        include: {
-          accounts: true,
-          application: true,
-        },
-      });
+    .mutation(
+      async ({
+        ctx: { user, prisma },
+        input: { whyJoin, howLongWillYouPlay },
+      }) => {
+        if (!user.minecraftUUID) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You must link your Minecraft account",
+          });
+        }
 
-      if (!user) {
-        throw new Error("User not found");
-      }
+        if (user.application) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You have already applied",
+          });
+        }
 
-      if (!user.minecraftUUID) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "You must link your Minecraft account",
-        });
-      }
-
-      if (user.application) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "You have already applied",
-        });
-      }
-
-      const application = await ctx.prisma.application.create({
-        data: {
+        const application = await prisma.application.create({
           data: {
-            whyJoin,
-            howLongWillYouPlay,
-          },
-          user: {
-            connect: {
-              id: user.id,
+            data: {
+              whyJoin,
+              howLongWillYouPlay,
+            },
+            user: {
+              connect: {
+                id: user.id,
+              },
             },
           },
-        },
-      });
+        });
 
-      await createApplicationChannel(
-        application,
-        getDiscordUser(user.accounts).id,
-        {
-          whyJoin,
-          howLongWillYouPlay,
-        }
-      );
+        await createApplicationChannel(
+          application,
+          getDiscordUser(user.accounts).id,
+          {
+            whyJoin,
+            howLongWillYouPlay,
+          }
+        );
 
-      return {
-        applicationId: application.id,
-      };
-    }),
-  status: protectedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.prisma.user.findUnique({
-      where: {
-        id: ctx.session.user.id,
-      },
-      include: {
-        application: true,
-      },
-    });
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
+        return {
+          applicationId: application.id,
+        };
+      }
+    ),
+  status: protectedProcedure.query(async ({ ctx: { user } }) => {
     return {
       stages: {
         linkMinecraft: !!user.minecraftUUID,
