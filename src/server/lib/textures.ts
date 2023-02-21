@@ -1,3 +1,6 @@
+export const BarrierTexture =
+  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAAxUlEQVR4XmMY8YARVwjsYWT8D5JT+f+fokC6wwixwuX/f6x2MQ10FGC46gEDw39aOOo81NBABgYUOwdPCOCKc0JxiCu0cIUkekgMeAiwwHyAntqp5XOYObhy0+AJAfS4xJVviY1z9BDElSYGbwgQWxag+4zUtDN0Q4BSn8NCeOiFALV8PvRCgNo+HzohQCufD/4QoJbPCbWwBk85gKvepnaLCL2OGXyt4vXQVrEhA3XB4G8Vo/t3PZX7B+j9gUFTDjCMeAAAsk9UafDvQq4AAAAASUVORK5CYII=";
+
 export const ItemTextures = {
   comment:
     "This file is maintained by TheDestruc7i0n (https://thedestruc7i0n.ca). You may use this file with credit given.",

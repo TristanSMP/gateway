@@ -1,3 +1,4 @@
+import { ApplicationStatus } from "@prisma/client";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 
@@ -97,6 +98,49 @@ export const onlinePlayerProcedure = playerProcedure.use(
         // infers the `session` as non-nullable
         session: { ...ctx.session, user: ctx.session.user },
         player,
+      },
+    });
+  }
+);
+
+/**
+ * playerMemberProcedure (needs client to be logged in and have a minecraft account linked that's online and a member of the server)
+ */
+export const playerMemberProcedure = playerProcedure.use(
+  async ({ ctx, next }) => {
+    if (ctx.user.application?.status !== ApplicationStatus.Approved) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "You must be a member to do this",
+      });
+    }
+
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: { ...ctx.session, user: ctx.session.user },
+      },
+    });
+  }
+);
+
+/**
+ * onlinePlayerMemberProcedure (needs client to be logged in and have a minecraft account linked that's online and a member of the server)
+ */
+export const onlinePlayerMemberProcedure = onlinePlayerProcedure.use(
+  async ({ ctx, next }) => {
+    if (ctx.user.application?.status !== ApplicationStatus.Approved) {
+      throw new TRPCError({
+        code: "BAD_REQUEST",
+        message: "You must be a member to do this",
+      });
+    }
+
+    return next({
+      ctx: {
+        // infers the `session` as non-nullable
+        session: { ...ctx.session, user: ctx.session.user },
+        player: ctx.player,
       },
     });
   }

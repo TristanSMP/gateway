@@ -1,11 +1,13 @@
 /* eslint-disable @next/next/no-img-element */
 import { DocumentIcon } from "@heroicons/react/24/solid";
-import { List, Modal, Tooltip } from "@mantine/core";
+import { List, Modal } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
-import React, { useState } from "react";
-import { Inventory, Item } from "../../server/types";
+import Link from "next/link";
+import { useState } from "react";
+import Inventory from "../../components/player/Inventory";
+import type { InventorySlotPayload } from "../../server/lib/market/serialization";
 import { trpc } from "../../utils/trpc";
 
 const Market: NextPage = () => {
@@ -26,7 +28,7 @@ const Market: NextPage = () => {
 
   const [opened, setOpened] = useState(false);
   const [price, setPrice] = useState(1);
-  const [item, setItem] = useState<Item | null>(null);
+  const [item, setItem] = useState<InventorySlotPayload>(null);
 
   if (sessionStatus === "loading") {
     return <div>Loading...</div>;
@@ -36,7 +38,7 @@ const Market: NextPage = () => {
     return <div>Not signed in</div>;
   }
 
-  const handleItemClick = async (item: Item | null) => {
+  const handleItemClick = async (item: InventorySlotPayload) => {
     if (item) {
       setItem(item);
       setOpened(true);
@@ -110,14 +112,19 @@ const Market: NextPage = () => {
             <List.Item
               icon={
                 item.image ? (
-                  <img src={item.image} alt={item.name} />
+                  <div className="flex flex-row">
+                    <img src={item.image} alt={item.name} />
+                    <span className="ml-2 ">{item.sellers.length} sellers</span>
+                  </div>
                 ) : (
                   <DocumentIcon />
                 )
               }
               key={id}
             >
-              {item.name}
+              <Link href={`/market/${item.id}`} className="hover:underline">
+                {item.name}
+              </Link>
             </List.Item>
           ))}
         </List>
@@ -127,60 +134,3 @@ const Market: NextPage = () => {
 };
 
 export default Market;
-
-const Item: React.FC<{
-  item: Item | null;
-  onClick?: () => void;
-}> = ({ item, onClick }) => {
-  return (
-    <Tooltip label={item?.name ? `${item.name} (${item.amount})` : undefined}>
-      <div onClick={onClick} className="cursor-pointer">
-        {item ? (
-          <img className="h-10 w-10 border" src={item.image} alt={item.name} />
-        ) : (
-          <div className="h-10 w-10 border" />
-        )}
-      </div>
-    </Tooltip>
-  );
-};
-
-const Inventory: React.FC<{
-  inventory: Inventory;
-  onClick?: (item: Item | null) => void;
-}> = ({ inventory, onClick }) => {
-  const handleItemClick = (item: Item | null) => {
-    onClick?.(item);
-  };
-
-  return (
-    <div className="flex flex-row gap-1">
-      <div className="flex flex-col gap-1">
-        <div className="grid w-fit grid-cols-9 grid-rows-3 gap-1">
-          {inventory.inventory.map((item, id) => (
-            <Item key={id} item={item} onClick={() => handleItemClick(item)} />
-          ))}
-        </div>
-
-        <div className="grid w-fit grid-cols-9 grid-rows-1 gap-1">
-          {inventory.hotBar.map((item, id) => (
-            <Item key={id} item={item} onClick={() => handleItemClick(item)} />
-          ))}
-        </div>
-      </div>
-
-      <div className="flex flex-col gap-1">
-        <div className="grid w-fit grid-cols-1 grid-rows-4 gap-1">
-          {inventory.armor.map((item, id) => (
-            <Item key={id} item={item} onClick={() => handleItemClick(item)} />
-          ))}
-        </div>
-        <div className="grid w-fit grid-cols-1 grid-rows-1 gap-1">
-          {inventory.offHand.map((item, id) => (
-            <Item key={id} item={item} onClick={() => handleItemClick(item)} />
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-};

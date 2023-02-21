@@ -1,117 +1,98 @@
+import { AuctionStatus } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import type { ItemStack } from "elytra";
 import { z } from "zod";
-import { sha256 } from "../../../utils/hashing";
-import { ItemTextures } from "../../lib/textures";
-import type { Inventory, Item } from "../../types";
-import { onlinePlayerProcedure, protectedProcedure, router } from "../trpc";
-
-const parseItem = (item: ItemStack, index: number): Item => {
-  return {
-    name: item.name,
-    amount: item.amount,
-    image: ItemTextures.items.find((texture) => {
-      return texture.id.includes(`minecraft:${item.id.toLowerCase()}`);
-    })?.texture,
-    type: item.id,
-    index: index,
-  };
-};
-
-const parseItems = (items: (ItemStack | null)[]): Inventory => {
-  return {
-    hotBar: items
-      .slice(0, 9)
-      .map((item) => (item ? parseItem(item, items.indexOf(item)) : null)),
-    inventory: items
-      .slice(9, 36)
-      .map((item) => (item ? parseItem(item, items.indexOf(item)) : null)),
-    armor: items
-      .slice(36, 40)
-      .map((item) => (item ? parseItem(item, items.indexOf(item)) : null)),
-    offHand: items
-      .slice(40, 41)
-      .map((item) => (item ? parseItem(item, items.indexOf(item)) : null)),
-  };
-};
+import { MarketSerializer } from "../../lib/market/serialization";
+import { MarketUtils } from "../../lib/market/utils";
+import {
+  onlinePlayerMemberProcedure,
+  playerMemberProcedure,
+  router,
+} from "../trpc";
 
 export const marketRouter = router({
-  discoveredItemTypes: protectedProcedure.query(async ({ ctx: { prisma } }) => {
-    const discoveredItems = await prisma.itemType.findMany();
+  discoveredItemTypes: playerMemberProcedure.query(async ({}) => {
+    const discoveredItems = await MarketUtils.items.getDiscoveredItemTypes();
 
-    return discoveredItems.map((item) => {
-      return {
-        name: item.name,
-        image: ItemTextures.items.find((texture) => {
-          return texture.id.includes(
-            `minecraft:${item.namespacedId.toLowerCase()}`
-          );
-        })?.texture,
-      };
-    });
+    return discoveredItems;
   }),
-  inventory: onlinePlayerProcedure.query(async ({ ctx: { player } }) => {
-    const items = parseItems(player.inventory.items);
+  getItemType: playerMemberProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .query(async ({ input: { id } }) => {
+      const itemType = await MarketUtils.items.getItemType(id);
+
+      if (!itemType) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Item type not found",
+        });
+      }
+
+      return MarketSerializer.serializeDiscoveredItem(itemType);
+    }),
+  inventory: onlinePlayerMemberProcedure.query(async ({ ctx: { player } }) => {
+    const items = MarketSerializer.serializeInventory(player.inventory.items);
 
     return items;
   }),
-  sellItem: onlinePlayerProcedure
+  sellItem: onlinePlayerMemberProcedure
     .input(
       z.object({
         index: z.number(),
         price: z.number().positive().int().min(1),
       })
     )
-    .mutation(
-      async ({ ctx: { user, player, prisma }, input: { index, price } }) => {
-        const item = player.inventory.items[index];
+    .mutation(async ({ ctx: { user, player }, input: { index, price } }) => {
+      const item = player.inventory.items[index];
 
-        if (!item) {
-          throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "Item not found",
-          });
-        }
-
-        await player.inventory.removeItem(index);
-
-        const hashedItem = sha256(item.base64);
-
-        try {
-          const itemType = await prisma.itemType.upsert({
-            where: {
-              b64key: hashedItem,
-            },
-            create: {
-              base64: item.base64,
-              b64key: hashedItem,
-              name: item.name,
-              namespacedId: item.id,
-            },
-            update: {},
-          });
-
-          await prisma.auctionedItem.create({
-            data: {
-              price,
-              seller: {
-                connect: {
-                  id: user.id,
-                },
-              },
-              type: {
-                connect: {
-                  b64key: itemType.b64key,
-                },
-              },
-            },
-          });
-
-          return true;
-        } catch (error) {
-          await player.inventory.addItem(item);
-          throw error;
-        }
+      if (!item) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Item not found",
+        });
       }
-    ),
+
+      await player.inventory.removeItem(index);
+
+      try {
+        await MarketUtils.items.listItem(item, price, user);
+
+        return true;
+      } catch (error) {
+        await player.inventory.addItem(item);
+        throw error;
+      }
+    }),
+  buyItem: onlinePlayerMemberProcedure
+    .input(
+      z.object({
+        id: z.string(), // id of the auctioneditem
+      })
+    )
+    .mutation(async ({ ctx: { player, user, prisma }, input: { id } }) => {
+      const auctionedItem = await prisma.auctionedItem.findFirst({
+        where: {
+          id,
+          status: AuctionStatus.ACTIVE,
+        },
+        include: {
+          seller: true,
+          type: true,
+        },
+      });
+
+      if (!auctionedItem) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Item not found",
+        });
+      }
+
+      await MarketUtils.items.buyItem(auctionedItem, user, player);
+
+      return true;
+    }),
 });

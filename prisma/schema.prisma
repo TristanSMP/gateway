@@ -53,12 +53,17 @@ model User {
   linkChallenge String? @unique
   minecraftUUID String? @unique
 
-  accounts      Account[]
-  sessions      Session[]
-  itemsOnMarket AuctionedItem[]
+  accounts Account[]
+  sessions Session[]
+
+  balance       Int             @default(0)
+  itemsOnMarket AuctionedItem[] @relation("AuctionedItemSeller")
+  boughtItems   AuctionedItem[] @relation("AuctionedItemBuyer")
+
   isBotAdmin    Boolean         @default(false)
   application   Application?
   Image         Image[]
+  AuctionedItem AuctionedItem[]
 }
 
 enum ApplicationStatus {
@@ -103,17 +108,24 @@ model AuctionedItem {
   price  Int
   status AuctionStatus @default(PENDING)
 
-  seller   User   @relation(fields: [sellerId], references: [id])
+  seller   User   @relation(fields: [sellerId], references: [id], name: "AuctionedItemSeller")
   sellerId String
+
+  buyer   User?   @relation(fields: [buyerId], references: [id], name: "AuctionedItemBuyer")
+  buyerId String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   type    ItemType? @relation(fields: [typeb64], references: [b64key])
   typeb64 String?
+  User    User?     @relation(fields: [userId], references: [id])
+  userId  String?
 
   @@index([sellerId])
   @@index([typeb64])
+  @@index([userId])
+  @@index([buyerId])
 }
 
 // The item type that is being auctioned
