@@ -94,6 +94,22 @@ async function refreshAccessToken(token: any) {
 
   const json = await res.json();
 
+  await prisma.account
+    .update({
+      where: {
+        provider_providerAccountId: {
+          provider: "discord",
+          providerAccountId: token.user.id,
+        },
+      },
+      data: {
+        access_token: json.access_token,
+        refresh_token: json.refresh_token,
+        expires_at: Date.now() + json.expires_in * 1000,
+      },
+    })
+    .catch();
+
   return {
     accessToken: json.access_token,
     accessTokenExpires: Date.now() + json.expires_in * 1000,
