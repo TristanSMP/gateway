@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "../../../server/db/client";
 import { updateRoleMeta } from "../../../server/lib/discord";
 import { syncUser } from "../../../server/lib/linking";
+import { UUIDToProfile } from "../../../server/lib/minecraft";
 import { getTSMPUser } from "../../../server/lib/utils";
 import adminMiddleware from "../../../utils/adminMiddleware";
 
@@ -27,6 +28,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (!tsmpUser.application) {
     res.status(404).json({
       error: "user has no application",
+    });
+    return;
+  }
+
+  if (!tsmpUser.minecraftUUID) {
+    res.status(404).json({
+      error: "user has no minecraft account linked (missing minecraftUUID)",
     });
     return;
   }
@@ -68,9 +76,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         return "unknown error";
       });
 
+    const profile = await UUIDToProfile(tsmpUser.minecraftUUID);
+
     res.status(200).json({
       syncedUser,
       syncedRoleMeta,
+      minecraftUsername: profile.name,
+      minecraftUUID: tsmpUser.minecraftUUID,
     });
   } catch (e) {
     console.error(e);
