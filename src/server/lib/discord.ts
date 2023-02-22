@@ -54,6 +54,14 @@ export async function updateRoleMeta(
 
   const profile = await UUIDToProfile(user.minecraftUUID);
 
+  const needsRefresh = discordUser.expiresAt
+    ? discordUser.expiresAt * 1000 < Date.now()
+    : true;
+
+  if (needsRefresh) {
+    throw new Error("Discord access token expired");
+  }
+
   const res = await fetch(
     `${RouteBases.api}${Routes.userApplicationRoleConnection(
       env.DISCORD_CLIENT_ID
