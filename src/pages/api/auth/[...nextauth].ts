@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import { RouteBases, Routes } from "discord-api-types/v10";
 import NextAuth, { type NextAuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
@@ -13,6 +15,25 @@ export const authOptions: NextAuthOptions = {
       }
       return session;
     },
+    async jwt(token: any, user?: any, account?: any) {
+      // Initial sign in
+      if (account && user) {
+        return {
+          accessToken: account.accessToken,
+          accessTokenExpires: Date.now() + account.expires_in * 1000,
+          refreshToken: account.refresh_token,
+          user,
+        };
+      }
+
+      // Return previous token if the access token has not expired yet
+      if (Date.now() < token.accessTokenExpires) {
+        return token;
+      }
+
+      // Access token has expired, try to update it
+      return refreshAccessToken(token);
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -24,5 +45,34 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
 };
+
+async function refreshAccessToken(token: any) {
+  const res = await fetch(`${RouteBases.api}${Routes.oauth2TokenExchange()}`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({
+      client_id: env.DISCORD_CLIENT_ID,
+      client_secret: env.DISCORD_CLIENT_SECRET,
+      grant_type: "refresh_token",
+      refresh_token: token.refreshToken,
+    }),
+  });
+
+  if (res.status >= 400) {
+    res.json().then(console.log);
+    throw new Error(`Failed to refresh token: ${res.status} ${res.statusText}`);
+  }
+
+  const json = await res.json();
+
+  return {
+    accessToken: json.access_token,
+    accessTokenExpires: Date.now() + json.expires_in * 1000,
+    refreshToken: json.refresh_token,
+    user: token.user,
+  };
+}
 
 export default NextAuth(authOptions);
