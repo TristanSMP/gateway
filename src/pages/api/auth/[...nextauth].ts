@@ -36,15 +36,15 @@ export const authOptions: NextAuthOptions = {
       return refreshAccessToken(token);
     },
     async signIn({ user, account }) {
-      console.log(user, account);
       if (user && account) {
         if (account.provider === "discord") {
+          console.log("Updating account");
           await prisma.account
             .update({
               where: {
                 provider_providerAccountId: {
                   provider: "discord",
-                  providerAccountId: user.id,
+                  providerAccountId: account.providerAccountId,
                 },
               },
               data: {
