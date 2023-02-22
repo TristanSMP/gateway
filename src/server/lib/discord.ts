@@ -1,24 +1,19 @@
-import type { Account, Application, User } from "@prisma/client";
-import { ApplicationStatus } from "@prisma/client";
+import { Account, Application, ApplicationStatus, User } from "@prisma/client";
 import type {
   RESTPostAPIGuildChannelJSONBody,
   RESTPostAPIGuildChannelResult,
-  RESTPutAPICurrentUserApplicationRoleConnectionJSONBody,
 } from "discord-api-types/v10";
 import {
   ButtonStyle,
   ChannelType,
   ComponentType,
   OverwriteType,
-  RouteBases,
   Routes,
 } from "discord-api-types/v10";
 import { DisployApp } from "../../bot/main";
 import { EmbedColor } from "../../bot/utils/embeds";
 import { env } from "../../env/server.mjs";
 import { prisma } from "../db/client";
-import type { MinecraftProfile } from "./minecraft";
-import { UUIDToProfile } from "./minecraft";
 import { getDiscordUser } from "./utils";
 
 export async function updateRoleMeta(
@@ -48,57 +43,23 @@ export async function updateRoleMeta(
 
   const discordUser = getDiscordUser(user.accounts);
 
-  if (!discordUser.accessToken) {
-    throw new Error("Discord user not found");
-  }
-
-  const profile = await UUIDToProfile(user.minecraftUUID);
-
-  const needsRefresh = discordUser.expiresAt
-    ? discordUser.expiresAt * 1000 < Date.now()
-    : true;
-
-  if (needsRefresh) {
-    throw new Error(
-      `${user.name} has expired, please make them re-link their account @ https://tristansmp.com/auth/login (Internal error: DAE-1)`
+  if (user.application?.status === ApplicationStatus.Approved) {
+    await DisployApp.rest.put(
+      Routes.guildMemberRole(
+        env.DISCORD_GUILD_ID,
+        discordUser.id,
+        "1054689107248427069" // Yes I know this is bad, I could not be bothered to go through the effort of setting another env variable
+      )
+    );
+  } else {
+    await DisployApp.rest.delete(
+      Routes.guildMemberRole(
+        env.DISCORD_GUILD_ID,
+        discordUser.id,
+        "1054689107248427069"
+      )
     );
   }
-
-  const res = await fetch(
-    `${RouteBases.api}${Routes.userApplicationRoleConnection(
-      env.DISCORD_CLIENT_ID
-    )}`,
-    {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${discordUser.accessToken}`,
-      },
-      body: JSON.stringify(createRoleMeta(profile, user)),
-    }
-  );
-
-  if (res.status >= 400) {
-    res.json().then(console.log);
-    throw new Error(
-      `Failed to update role meta: ${res.status} ${res.statusText}`
-    );
-  }
-}
-
-function createRoleMeta(
-  profile: MinecraftProfile,
-  user: User & {
-    application: Application | null;
-  }
-): RESTPutAPICurrentUserApplicationRoleConnectionJSONBody {
-  return {
-    platform_name: "TristanSMP",
-    platform_username: profile.name,
-    metadata: {
-      is_member: user.application?.status == ApplicationStatus.Approved ? 1 : 0,
-    },
-  };
 }
 
 export async function createApplicationChannel(
