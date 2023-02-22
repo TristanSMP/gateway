@@ -13,6 +13,7 @@ export const authOptions: NextAuthOptions = {
       if (session.user) {
         session.user.id = user.id;
       }
+
       return session;
     },
     async jwt(token: any, user?: any, account?: any) {
@@ -33,6 +34,32 @@ export const authOptions: NextAuthOptions = {
 
       // Access token has expired, try to update it
       return refreshAccessToken(token);
+    },
+    async signIn({ user, account }) {
+      console.log(user, account);
+      if (user && account) {
+        if (account.provider === "discord") {
+          await prisma.account
+            .update({
+              where: {
+                provider_providerAccountId: {
+                  provider: "discord",
+                  providerAccountId: user.id,
+                },
+              },
+              data: {
+                access_token: account.accessToken as string,
+                refresh_token: account.refresh_token,
+                expires_at: account.expires_at,
+              },
+            })
+            .catch();
+        }
+
+        return true;
+      }
+
+      return false;
     },
   },
   adapter: PrismaAdapter(prisma),
