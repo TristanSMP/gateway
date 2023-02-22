@@ -20,7 +20,7 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["cdn.discordapp.com"],
+    domains: ["cdn.discordapp.com", "cdn.tristancamejo.com"],
   },
   redirects: async () => [
     {

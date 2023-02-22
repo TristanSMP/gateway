@@ -15,19 +15,15 @@ export const getStaticProps = async () => {
       createdAt: "desc",
     },
     where: {
-      reviewStatus: ReviewStatus.Approved
-    }
+      reviewStatus: ReviewStatus.Approved,
+    },
   });
 
   const image = randomImage[Math.floor(Math.random() * randomImage.length)];
 
-  if (!image) {
-    throw new Error("Failed to get random image.");
-  }
-
   return {
     props: {
-      image: image.url,
+      image: image?.url ?? "https://cdn.tristancamejo.com/tsmp.gif",
     },
     revalidate: 60, // New random image every minute.
   };
