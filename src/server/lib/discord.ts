@@ -60,7 +60,7 @@ export async function updateRoleMeta(
 
   if (needsRefresh) {
     throw new Error(
-      `${user.id} has expired, please make them re-link their account @ https://tristansmp.com/auth/login (Internal error: DAE-1)`
+      `${user.name} has expired, please make them re-link their account @ https://tristansmp.com/auth/login (Internal error: DAE-1)`
     );
   }
 
