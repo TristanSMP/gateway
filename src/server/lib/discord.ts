@@ -59,7 +59,9 @@ export async function updateRoleMeta(
     : true;
 
   if (needsRefresh) {
-    throw new Error("Discord access token expired");
+    throw new Error(
+      `${user.id} has expired, please make them re-link their account @ https://tristansmp.com/auth/login (Internal error: DAE-1)`
+    );
   }
 
   const res = await fetch(
