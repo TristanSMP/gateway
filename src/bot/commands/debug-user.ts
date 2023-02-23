@@ -3,7 +3,10 @@ import {
   MessageFlags,
 } from "discord-api-types/v10";
 import type { ChatInputInteraction, Command } from "disploy";
+import { UUIDToProfile } from "../../server/lib/minecraft";
 import { getTSMPUser } from "../../server/lib/utils";
+import { EmbedColor } from "../utils/embeds";
+import { Emoji } from "../utils/emojis";
 
 const DebugUser: Command = {
   name: "debug-user",
@@ -28,45 +31,27 @@ const DebugUser: Command = {
     const show = interaction.options.getBoolean("show", true) || false;
 
     const tsmpUser = await getTSMPUser(user.id).catch(() => null);
-
-    const fields = tsmpUser
-      ? [
-          {
-            name: "Has TSMP account",
-            value: `Yes (${tsmpUser.id})`,
-            inline: true,
-          },
-          {
-            name: "Has linked Minecraft account",
-            value: `${
-              tsmpUser.minecraftUUID ? `Yes (${tsmpUser.minecraftUUID})` : "No"
-            }`,
-            inline: true,
-          },
-          {
-            name: "Has application",
-            value: `${
-              tsmpUser.application
-                ? `Yes (${tsmpUser.application.id}) [${tsmpUser.application.status}]`
-                : "No"
-            }`,
-            inline: true,
-          },
-        ]
-      : [
-          {
-            name: "Has TSMP account",
-            value: "No",
-            inline: true,
-          },
-        ];
+    const mcProfile = tsmpUser?.minecraftUUID
+      ? await UUIDToProfile(tsmpUser.minecraftUUID).catch(() => null)
+      : null;
 
     interaction.reply({
       embeds: [
         {
           title: "Debug User",
-          description: `Debugging ${user} (${user.id})`,
-          fields: fields,
+          description: [
+            "**Identity**",
+            `${Emoji.Discord} ${user} [${user.username}#${user.discriminator}] (${user.id})`,
+            `${Emoji.Minecraft} ${
+              tsmpUser?.minecraftUUID
+                ? `\`${mcProfile?.name ?? "Failed to resolve"}\` (${
+                    tsmpUser.minecraftUUID
+                  })`
+                : "No linked Minecraft account"
+            }`,
+            `${Emoji.TristanSMP} ${tsmpUser ? `Yes (${tsmpUser.id})` : "No"}`,
+          ].join("\n"),
+          color: EmbedColor.Invisible,
         },
       ],
       flags: show ? MessageFlags.Ephemeral : undefined,
