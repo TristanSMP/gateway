@@ -2,6 +2,7 @@ import ChangeLog from "./changelog";
 import DebugUser from "./debug-user";
 import ForceCreateApplicationChannel from "./force-create-application-channel";
 import Image from "./image";
+import InDiscordApply from "./in-cord-apply";
 import OnlinePlayers from "./online-players";
 import Ping from "./ping";
 import Refresh from "./refresh";
@@ -17,5 +18,6 @@ export const Commands = [
   DebugUser,
   UserStats,
   Image,
-  OnlinePlayers
+  OnlinePlayers,
+  InDiscordApply,
 ];
