@@ -1,3 +1,4 @@
+import { ApplicationStatus } from "@prisma/client";
 import {
   ApplicationCommandOptionType,
   MessageFlags,
@@ -50,6 +51,17 @@ const DebugUser: Command = {
                 : "No linked Minecraft account"
             }`,
             `${Emoji.TristanSMP} ${tsmpUser ? `Yes (${tsmpUser.id})` : "No"}`,
+            "",
+            `**Application status** ${
+              tsmpUser?.application?.status === ApplicationStatus.PendingReview
+                ? "Pending review"
+                : "Not pending review"
+            }`,
+            `${Emoji.TristanSMP} ${
+              tsmpUser?.application?.status === ApplicationStatus.Approved
+                ? "Approved"
+                : "Not approved"
+            }`,
           ].join("\n"),
           color: EmbedColor.Invisible,
         },
