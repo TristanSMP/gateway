@@ -33,11 +33,6 @@ export default function Features() {
           <p className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
             Friendly invite-only and immersive semi-vanilla Minecraft SMP.
           </p>
-          <p className="mx-auto mt-6 max-w-2xl text-lg leading-8">
-            Powered by Artificial Intelligence, InteliSolve&apos;s Solver can
-            solve questions from text and answer them uniquely and plagiarism
-            free.
-          </p>
         </div>
 
         <div className="mt-20 max-w-lg sm:mx-auto md:max-w-none">
