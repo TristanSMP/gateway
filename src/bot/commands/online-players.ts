@@ -23,7 +23,7 @@ const OnlinePlayers: Command = {
           title: "Server Info",
           description: [
             `**Online Players:** (${onlinePlayers.length})`,
-            onlinePlayers.map((player) => `• ${player.name}`).join("\n"),
+            onlinePlayers.map((player) => `• \`${player.name}\``).join("\n"),
             "",
             "**Fun Facts:**",
             `• There's \`${onlinePlayers.reduce(
