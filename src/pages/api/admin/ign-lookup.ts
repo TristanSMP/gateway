@@ -1,6 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { prisma } from "../../../server/db/client";
-import { UsernameToProfile } from "../../../server/lib/minecraft";
+import { chunkUUID, UsernameToProfile } from "../../../server/lib/minecraft";
 import { getDiscordUser } from "../../../server/lib/utils";
 import adminMiddleware from "../../../utils/adminMiddleware";
 
@@ -21,9 +21,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     });
   }
 
+  const uuid = chunkUUID(profile.id);
+
   const tsmpAcct = await prisma.user.findFirst({
     where: {
-      minecraftUUID: profile.id,
+      minecraftUUID: uuid,
     },
     include: {
       accounts: true,
@@ -39,7 +41,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
   const discord = getDiscordUser(tsmpAcct.accounts);
 
   return res.status(200).json({
-    minecraftUUID: profile.id,
+    minecraftUUID: uuid,
     minecraftUsername: profile.name,
     discordId: discord?.id ?? null,
   });
