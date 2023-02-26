@@ -8,6 +8,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Features from "../components/Features";
 import PlayersOnlineHero from "../components/PlayersOnlineHero";
+import { elytra } from "../server/db/client";
 
 export const getServerSideProps = async (
   context: GetServerSidePropsContext
