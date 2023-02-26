@@ -26,6 +26,7 @@ export const getServerSideProps = async (
       },
     };
   } catch (error) {
+    console.error(error);
     return {
       props: {
         players: [],
