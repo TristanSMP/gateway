@@ -26,21 +26,23 @@ const OnlinePlayers: Command = {
             onlinePlayers.map((player) => `• ${player.name}`).join("\n"),
             "",
             "**Fun Facts:**",
-            `• The total amount of items in inventory is \`${onlinePlayers.reduce(
+            `• There's \`${onlinePlayers.reduce(
               (acc, player) =>
                 acc +
                 player.inventory.items
                   .map((item) => item?.amount || 0)
                   .reduce((a, b) => a + b, 0),
               0
-            )}\``,
-            `• The longest name is \`${onlinePlayers
+            )}\` items loaded in the inventory of all players.`,
+            `• \`${onlinePlayers
               .map((player) => player.name)
-              .reduce((a, b) => (a.length > b.length ? a : b))}\``,
+              .reduce((a, b) =>
+                a.length > b.length ? a : b
+              )}\` has the longest name.`,
             "",
             "**Nerd Info:**",
             `• Base MCV: \`${elytra.minecraftVersion}\``,
-            `• Bukkit Version: \`${elytra.bukkitVersion}\``,
+            `• Paper Version: \`${elytra.bukkitVersion}\``,
             `• Vercel Deployment: \`${
               process.env.VERCEL_GIT_COMMIT_REF ?? "N/A"
             }\``,
