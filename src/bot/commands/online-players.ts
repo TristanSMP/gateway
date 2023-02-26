@@ -43,9 +43,11 @@ const OnlinePlayers: Command = {
             "**Nerd Info:**",
             `• Base MCV: \`${elytra.minecraftVersion}\``,
             `• Paper Version: \`${elytra.bukkitVersion}\``,
-            `• Vercel Deployment: \`${
-              process.env.VERCEL_GIT_COMMIT_REF ?? "N/A"
-            }\``,
+            `• Vercel Deployment: [\`${
+              process.env.VERCEL_GIT_COMMIT_SHA
+                ? process.env.VERCEL_GIT_COMMIT_SHA.slice(0, 7)
+                : "N/A"
+            }\`](${process.env.VERCEL_URL ?? "N/A"})`,
             `• Node.js Version: \`${process.version}\``,
           ].join("\n"),
 
