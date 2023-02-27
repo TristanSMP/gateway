@@ -24,6 +24,16 @@ export const onboardingRouter = router({
       })
     )
     .query(async ({ ctx, input: { mcUsername } }) => {
+      if (mcUsername.startsWith(".")) {
+        return {
+          id: "00000000-0000-0000-0000-000000000000",
+          name: mcUsername,
+          avatar:
+            "https://crafatar.com/avatars/00000000-0000-0000-0000-000000000000?size=128&overlay",
+          online: true,
+        };
+      }
+
       const profile = await UsernameToProfile(mcUsername);
 
       if (!profile) {
@@ -48,7 +58,8 @@ export const onboardingRouter = router({
       })
     )
     .mutation(async ({ ctx, input: { mcUsername } }) => {
-      const player = await ctx.elytra.players.get(mcUsername);
+      const players = await ctx.elytra.players.get();
+      const player = players.find((p) => p.name === mcUsername);
 
       if (!player) {
         throw new TRPCError({
@@ -90,7 +101,8 @@ export const onboardingRouter = router({
       })
     )
     .mutation(async ({ ctx, input: { mcUsername } }) => {
-      const player = await ctx.elytra.players.get(mcUsername);
+      const players = await ctx.elytra.players.get();
+      const player = players.find((p) => p.name === mcUsername);
 
       if (!player) {
         throw new TRPCError({

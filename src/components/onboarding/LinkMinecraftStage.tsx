@@ -1,18 +1,27 @@
 import { showNotification } from "@mantine/notifications";
-import React, { useState } from "react";
-import { trpc } from "../../utils/trpc";
+import React, { useEffect, useState } from "react";
 import JoinSteps from "../../components/onboarding/JoinSteps";
+import { trpc } from "../../utils/trpc";
 
 const LinkMinecraftStage: React.FC<{
   username: string;
   setUsername: (username: string) => void;
   next: () => void;
 }> = ({ setUsername, username, next }) => {
+  const [bedrock, setBedrock] = useState(false);
+  const [inputUsername, setInputUsername] = useState(username);
+
   const profile = trpc.onboarding.findPlayer.useQuery({
-    mcUsername: username,
+    mcUsername: bedrock ? `.${inputUsername}` : inputUsername,
   });
 
-  const [inputUsername, setInputUsername] = useState(username);
+  useEffect(() => {
+    if (inputUsername.startsWith(".")) {
+      setBedrock(true);
+    } else {
+      setBedrock(false);
+    }
+  }, [inputUsername]);
 
   return (
     <div>
@@ -26,21 +35,28 @@ const LinkMinecraftStage: React.FC<{
           </p>
 
           <div>
-            <input
-              type="text"
-              placeholder="Minecraft username"
-              value={inputUsername}
-              onChange={(e) => setInputUsername(e.target.value)}
-              className="input-bordered input mt-5 -ml-0.5 w-full max-w-xs"
-            />
+            <div className="flex flex-row py-5">
+              <input
+                type="text"
+                placeholder="Minecraft username"
+                value={inputUsername}
+                onChange={(e) => setInputUsername(e.target.value)}
+                className="input-bordered input mt-5 -ml-0.5 w-full max-w-xs"
+              />
 
-            <div className="mt-2 mb-5 text-xs opacity-60">
-              Only Java Edition accounts are supported.
+              <button
+                onClick={() => {
+                  setBedrock(!bedrock);
+                }}
+                className="btn-secondary btn mt-5 -ml-0.5 w-1/3 max-w-xs"
+              >
+                {bedrock ? "Bedrock" : "Java"}
+              </button>
             </div>
 
             <button
               onClick={() => {
-                setUsername(inputUsername);
+                setUsername(bedrock ? `.${inputUsername}` : inputUsername);
               }}
               className={`btn-primary btn ${
                 profile.isLoading && username !== "" ? "loading" : ""
