@@ -74,8 +74,10 @@ export const marketRouter = router({
       })
     )
     .mutation(async ({ ctx: { player, prisma, user }, input: { amount } }) => {
+      console.log(player.inventory.items);
+
       const diamondsInInventory = player.inventory.items.filter(
-        (item) => item?.id === "minecraft:diamond"
+        (item) => item?.id === "DIAMOND"
       ).length;
 
       if (diamondsInInventory < amount) {
@@ -90,7 +92,7 @@ export const marketRouter = router({
       try {
         for (let i = 0; i < amount; i++) {
           const index = player.inventory.items.findIndex(
-            (item) => item?.id === "minecraft:diamond"
+            (item) => item?.id === "DIAMOND"
           );
 
           await player.inventory.removeItem(index);
