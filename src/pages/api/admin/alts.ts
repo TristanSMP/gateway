@@ -57,6 +57,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           },
         },
       });
+
+      res.status(200).json({
+        alts: user.minecraftAlternativeAccounts
+          .map((alt) => alt.minecraftUUID)
+          .concat(json.alt),
+      });
+      break;
     }
     case "DELETE": {
       const json = z
@@ -75,6 +82,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           },
         },
       });
+
+      res.status(200).json({
+        alts: user.minecraftAlternativeAccounts
+          .map((alt) => alt.minecraftUUID)
+          .filter((alt) => alt !== json.alt),
+      });
+      break;
     }
     default: {
       res.status(405).json({
