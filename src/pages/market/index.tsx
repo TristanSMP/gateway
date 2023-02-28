@@ -17,6 +17,10 @@ const Market: NextPage = () => {
     refetchInterval: 1000,
   });
 
+  const balanceQuery = trpc.market.balance.useQuery(undefined, {
+    refetchInterval: 1000,
+  });
+
   const discoveredItemTypesQuery = trpc.market.discoveredItemTypes.useQuery(
     undefined,
     {
@@ -25,9 +29,13 @@ const Market: NextPage = () => {
   );
 
   const sellItemMutation = trpc.market.sellItem.useMutation();
+  const depositDiamondsMutation = trpc.market.depositDiamonds.useMutation();
 
-  const [opened, setOpened] = useState(false);
+  const [sellItemModalOpened, setItemModalOpened] = useState(false);
+  const [depositDiamondsModalOpened, setDepositDiamondsModalOpened] =
+    useState(false);
   const [price, setPrice] = useState(1);
+  const [diamondsToDep, setDiamondsToDep] = useState(1);
   const [item, setItem] = useState<InventorySlotPayload>(null);
 
   if (sessionStatus === "loading") {
@@ -41,7 +49,7 @@ const Market: NextPage = () => {
   const handleItemClick = async (item: InventorySlotPayload) => {
     if (item) {
       setItem(item);
-      setOpened(true);
+      setItemModalOpened(true);
     }
   };
 
@@ -53,7 +61,7 @@ const Market: NextPage = () => {
       });
 
       setItem(null);
-      setOpened(false);
+      setItemModalOpened(false);
 
       showNotification({
         message: "Item sold",
@@ -63,9 +71,25 @@ const Market: NextPage = () => {
     }
   };
 
+  const handleDeposit = async () => {
+    await depositDiamondsMutation.mutateAsync({
+      amount: diamondsToDep,
+    });
+
+    setDepositDiamondsModalOpened(false);
+
+    showNotification({
+      message: "Diamonds deposited",
+    });
+  };
+
   return (
     <>
-      <Modal opened={opened} onClose={() => setOpened(false)} title="Sell item">
+      <Modal
+        opened={sellItemModalOpened}
+        onClose={() => setItemModalOpened(false)}
+        title="Sell item"
+      >
         <div className="flex flex-col gap-2">
           <input
             type="number"
@@ -76,9 +100,32 @@ const Market: NextPage = () => {
         </div>
       </Modal>
 
+      <Modal
+        opened={depositDiamondsModalOpened}
+        onClose={() => setDepositDiamondsModalOpened(false)}
+        title="Deposit diamonds"
+      >
+        <div className="flex flex-col gap-2">
+          <input
+            type="number"
+            value={diamondsToDep}
+            onChange={(e) => setDiamondsToDep(Number(e.target.value))}
+          />
+          <button onClick={handleDeposit}>Deposit</button>
+        </div>
+      </Modal>
+
+      <button onClick={() => setDepositDiamondsModalOpened(true)}>
+        Deposit diamonds
+      </button>
+
       <h1 className="mb-4 text-4xl font-bold">Market</h1>
 
       <h2 className="mb-4 text-2xl font-bold">Inventory</h2>
+
+      <h3 className="mb-4 text-2xl font-bold">
+        you have {balanceQuery.data ?? "LOADINGGGGG"} diamonds
+      </h3>
 
       <p className="mb-4">
         This is your current inventory (or an error message if you&apos;re not

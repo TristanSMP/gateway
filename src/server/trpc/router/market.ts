@@ -1,5 +1,6 @@
 import { AuctionStatus } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
+import type { ItemStack } from "elytra";
 import { z } from "zod";
 import { MarketSerializer } from "../../lib/market/serialization";
 import { MarketUtils } from "../../lib/market/utils";
@@ -66,6 +67,61 @@ export const marketRouter = router({
         throw error;
       }
     }),
+  depositDiamonds: onlinePlayerMemberProcedure
+    .input(
+      z.object({
+        amount: z.number().positive().int().min(1),
+      })
+    )
+    .mutation(async ({ ctx: { player, prisma, user }, input: { amount } }) => {
+      const diamondsInInventory = player.inventory.items.filter(
+        (item) => item?.id === "minecraft:diamond"
+      ).length;
+
+      if (diamondsInInventory < amount) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Not enough diamonds in inventory",
+        });
+      }
+
+      const takenItems: ItemStack[] = [];
+
+      try {
+        for (let i = 0; i < amount; i++) {
+          const index = player.inventory.items.findIndex(
+            (item) => item?.id === "minecraft:diamond"
+          );
+
+          await player.inventory.removeItem(index);
+          const stack = player.inventory.items[index];
+          if (stack) takenItems.push(stack);
+        }
+
+        await prisma.user.update({
+          data: {
+            balance: {
+              increment: amount,
+            },
+          },
+          where: {
+            id: user.id,
+          },
+        });
+      } catch (error) {
+        for (const stack of takenItems) {
+          await player.inventory.addItem(stack);
+        }
+
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Failed to deposit diamonds",
+        });
+      }
+    }),
+  balance: onlinePlayerMemberProcedure.query(async ({ ctx: { user } }) => {
+    return user.balance;
+  }),
   buyItem: onlinePlayerMemberProcedure
     .input(
       z.object({
