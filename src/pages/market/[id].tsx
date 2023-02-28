@@ -76,7 +76,9 @@ const MarketItem: NextPage = () => {
           <div className="mt-4 lg:row-span-3 lg:mt-0">
             <h2 className="sr-only">Product information</h2>
             <p className="text-3xl tracking-tight">
-              {itemQuery.data.cheapest.price} diamonds
+              {itemQuery.data.cheapest
+                ? `${itemQuery.data.cheapest.price} diamonds`
+                : "No sellers!"}
             </p>
 
             <form className="mt-10">
@@ -85,6 +87,11 @@ const MarketItem: NextPage = () => {
                 className="mt-10 flex w-full items-center justify-center rounded-md border border-transparent bg-indigo-600 py-3 px-8 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                 onClick={(e) => {
                   e.preventDefault();
+                  if (!itemQuery.data.cheapest)
+                    return showNotification({
+                      message: "No sellers!",
+                      color: "red",
+                    });
                   buyItem(itemQuery.data.cheapest.id);
                 }}
               >

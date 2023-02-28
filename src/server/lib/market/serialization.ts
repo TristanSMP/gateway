@@ -72,7 +72,7 @@ export interface DiscoveredItemPayload extends PartialItemPayload {
      * The auctioned item id
      */
     id: string;
-  };
+  } | null;
 }
 
 function serializeDiscoveredItem(
@@ -80,9 +80,12 @@ function serializeDiscoveredItem(
     stock: AuctionedItem[];
   }
 ): DiscoveredItemPayload {
-  const cheapest = item.stock.reduce((prev, curr) =>
-    prev.price < curr.price ? prev : curr
-  );
+  const cheapest =
+    item.stock.length > 0
+      ? item.stock.reduce((prev, curr) =>
+          prev.price < curr.price ? prev : curr
+        )
+      : null;
 
   return {
     name: item.name,
@@ -93,10 +96,12 @@ function serializeDiscoveredItem(
       id: stock.id,
     })),
     id: item.b64key,
-    cheapest: {
-      price: cheapest.price,
-      id: cheapest.id,
-    },
+    cheapest: cheapest
+      ? {
+          price: cheapest.price,
+          id: cheapest.id,
+        }
+      : null,
   };
 }
 
