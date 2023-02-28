@@ -32,6 +32,7 @@ export async function getTSMPUser(discordUserId: string) {
         include: {
           application: true,
           accounts: true,
+          minecraftAlternativeAccounts: true,
         },
       },
     },

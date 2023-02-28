@@ -1,4 +1,8 @@
-import type { Application, User } from "@prisma/client";
+import type {
+  Application,
+  MinecraftAlternativeAccount,
+  User,
+} from "@prisma/client";
 import { ApplicationStatus } from "@prisma/client";
 import { elytra } from "../db/client";
 
@@ -9,6 +13,7 @@ export function generateLinkChallenge(): string {
 export async function syncUser(
   user: User & {
     application: Application | null;
+    minecraftAlternativeAccounts: MinecraftAlternativeAccount[];
   }
 ): Promise<void> {
   if (!user.minecraftUUID || !user.application) {
@@ -18,14 +23,33 @@ export async function syncUser(
   const actions: Promise<unknown>[] = [];
 
   switch (user.application.status) {
-    case ApplicationStatus.Approved:
+    case ApplicationStatus.Approved: {
       actions.push(elytra.lp.addPermission(user.minecraftUUID, "group.active"));
+
+      if (user.minecraftAlternativeAccounts.length > 0) {
+        actions.push(
+          ...user.minecraftAlternativeAccounts.map((account) =>
+            elytra.lp.addPermission(account.minecraftUUID, "group.active")
+          )
+        );
+      }
+
       break;
-    default:
+    }
+    default: {
       actions.push(
         elytra.lp.removePermission(user.minecraftUUID, "group.active")
       );
+
+      if (user.minecraftAlternativeAccounts.length > 0) {
+        actions.push(
+          ...user.minecraftAlternativeAccounts.map((account) =>
+            elytra.lp.removePermission(account.minecraftUUID, "group.active")
+          )
+        );
+      }
       break;
+    }
   }
 
   try {

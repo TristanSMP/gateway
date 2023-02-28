@@ -29,6 +29,7 @@ async function handle(
     include: {
       user: {
         include: {
+          minecraftAlternativeAccounts: true,
           accounts: {
             include: {
               user: true,

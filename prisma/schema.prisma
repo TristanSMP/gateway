@@ -50,8 +50,9 @@ model User {
   emailVerified DateTime?
   image         String?
 
-  linkChallenge String? @unique
-  minecraftUUID String? @unique
+  linkChallenge                String?                       @unique
+  minecraftUUID                String?                       @unique
+  minecraftAlternativeAccounts MinecraftAlternativeAccount[]
 
   accounts Account[]
   sessions Session[]
@@ -64,6 +65,16 @@ model User {
   application   Application?
   Image         Image[]
   AuctionedItem AuctionedItem[]
+}
+
+model MinecraftAlternativeAccount {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  minecraftUUID String
+
+  @@unique([userId, minecraftUUID])
 }
 
 enum ApplicationStatus {
