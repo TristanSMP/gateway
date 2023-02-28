@@ -2,6 +2,7 @@
 import { DocumentIcon } from "@heroicons/react/24/solid";
 import { List, Modal } from "@mantine/core";
 import { showNotification } from "@mantine/notifications";
+import { TRPCClientError } from "@trpc/client";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Link from "next/link";
@@ -54,33 +55,51 @@ const Market: NextPage = () => {
   };
 
   const handleItemSell = async () => {
-    if (item) {
-      await sellItemMutation.mutateAsync({
-        index: item.index,
-        price,
-      });
+    try {
+      if (item) {
+        await sellItemMutation.mutateAsync({
+          index: item.index,
+          price,
+        });
 
-      setItem(null);
-      setItemModalOpened(false);
+        setItem(null);
+        setItemModalOpened(false);
 
-      showNotification({
-        message: "Item sold",
-      });
+        showNotification({
+          message: "Item sold",
+        });
 
-      inventoryQuery.refetch();
+        inventoryQuery.refetch();
+      }
+    } catch (e) {
+      if (e instanceof TRPCClientError) {
+        showNotification({
+          message: e.message,
+          color: "red",
+        });
+      }
     }
   };
 
   const handleDeposit = async () => {
-    await depositDiamondsMutation.mutateAsync({
-      amount: diamondsToDep,
-    });
+    try {
+      await depositDiamondsMutation.mutateAsync({
+        amount: diamondsToDep,
+      });
 
-    setDepositDiamondsModalOpened(false);
+      setDepositDiamondsModalOpened(false);
 
-    showNotification({
-      message: "Diamonds deposited",
-    });
+      showNotification({
+        message: "Diamonds deposited",
+      });
+    } catch (e) {
+      if (e instanceof TRPCClientError) {
+        showNotification({
+          message: e.message,
+          color: "red",
+        });
+      }
+    }
   };
 
   return (
