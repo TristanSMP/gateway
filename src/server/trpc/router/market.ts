@@ -119,7 +119,7 @@ export const marketRouter = router({
         });
       }
     }),
-  balance: onlinePlayerMemberProcedure.query(async ({ ctx: { user } }) => {
+  balance: playerMemberProcedure.query(async ({ ctx: { user } }) => {
     return user.balance;
   }),
   buyItem: onlinePlayerMemberProcedure
