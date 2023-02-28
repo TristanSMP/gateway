@@ -6,14 +6,12 @@ import { getTSMPUser } from "../../../server/lib/utils";
 import adminMiddleware from "../../../utils/adminMiddleware";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const data = z
-    .object({
-      discordId: z.string(),
-    })
-    .passthrough()
-    .parse(req.body);
+  const discordId =
+    req.method === "GET"
+      ? z.string().parse(req.query.discordId as string)
+      : z.string().parse(req.body.discordId);
 
-  const user = await getTSMPUser(data.discordId).catch(() => null);
+  const user = await getTSMPUser(discordId).catch(() => null);
 
   if (!user) {
     res.status(404).json({
