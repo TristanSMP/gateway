@@ -66,7 +66,7 @@ const Home: NextPage<
                     gradientUnits="userSpaceOnUse"
                   >
                     <stop stopColor="#7775D6" />
-                    <stop offset="1" stop-color="#E935C1" />
+                    <stop offset="1" stopColor="#E935C1" />
                   </linearGradient>
                 </defs>
               </svg>
