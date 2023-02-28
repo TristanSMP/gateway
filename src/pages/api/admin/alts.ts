@@ -2,6 +2,7 @@ import { ApplicationStatus } from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { prisma } from "../../../server/db/client";
+import { syncUser } from "../../../server/lib/linking";
 import { getTSMPUser } from "../../../server/lib/utils";
 import adminMiddleware from "../../../utils/adminMiddleware";
 
@@ -56,6 +57,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         },
       });
 
+      await syncUser(user);
+
       res.status(200).json({
         alts: user.minecraftAlternativeAccounts
           .map((alt) => alt.minecraftUUID)
@@ -80,6 +83,8 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
           },
         },
       });
+
+      await syncUser(user);
 
       res.status(200).json({
         alts: user.minecraftAlternativeAccounts
