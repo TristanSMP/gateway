@@ -46,7 +46,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         .passthrough()
         .parse(req.body);
 
-      await prisma.minecraftAlternativeAccount.create({
+      const newAlt = await prisma.minecraftAlternativeAccount.create({
         data: {
           minecraftUUID: json.alt,
           user: {
@@ -57,7 +57,13 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         },
       });
 
-      await syncUser(user);
+      await syncUser({
+        ...user,
+        minecraftAlternativeAccounts: [
+          ...user.minecraftAlternativeAccounts,
+          newAlt,
+        ],
+      });
 
       res.status(200).json({
         alts: user.minecraftAlternativeAccounts
@@ -84,7 +90,12 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
         },
       });
 
-      await syncUser(user);
+      await syncUser({
+        ...user,
+        minecraftAlternativeAccounts: user.minecraftAlternativeAccounts.filter(
+          (alt) => alt.minecraftUUID !== json.alt
+        ),
+      });
 
       res.status(200).json({
         alts: user.minecraftAlternativeAccounts
