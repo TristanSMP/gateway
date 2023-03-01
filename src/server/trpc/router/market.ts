@@ -2,6 +2,7 @@ import { AuctionStatus } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import type { ItemStack } from "elytra";
 import { z } from "zod";
+import { SingleDiamondB64 } from "../../../utils/Constants";
 import { MarketSerializer } from "../../lib/market/serialization";
 import { MarketUtils } from "../../lib/market/utils";
 import {
@@ -68,10 +69,17 @@ export const marketRouter = router({
       }
     }),
   depositDiamonds: onlinePlayerMemberProcedure.mutation(
-    async ({ ctx: { player, prisma, user } }) => {
+    async ({ ctx: { player, prisma, elytra, user } }) => {
       const diamondsInInventory = player.inventory.items
-        .filter((item: ItemStack | null) => item?.id === "DIAMOND")
-        .filter((item: ItemStack | null) => item !== null) as ItemStack[];
+        .map((item: ItemStack | null, index: number) => ({
+          item,
+          index,
+        }))
+        .filter((item) => item.item?.id === "DIAMOND")
+        .filter((item) => item.item !== null) as {
+        item: ItemStack;
+        index: number;
+      }[];
 
       if (diamondsInInventory.length === 0) {
         throw new TRPCError({
@@ -80,17 +88,15 @@ export const marketRouter = router({
         });
       }
 
-      const takenItems: ItemStack[] = [];
       let diamondsDeposited = 0;
 
       try {
         for (const diamond of diamondsInInventory) {
-          takenItems.push(diamond);
-          diamondsDeposited += diamond.amount;
+          diamondsDeposited += diamond.item.amount;
 
-          await player.inventory.removeItem(
-            player.inventory.items.indexOf(diamond)
-          );
+          console.log(diamond);
+
+          await player.inventory.removeItem(diamond.index);
         }
 
         await prisma.user.update({
@@ -104,8 +110,28 @@ export const marketRouter = router({
           },
         });
       } catch (error) {
-        for (const stack of takenItems) {
-          await player.inventory.addItem(stack);
+        console.error(error);
+
+        const newPlayer = await elytra.players.get(player.uuid);
+
+        if (!newPlayer) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "Failed to deposit diamonds",
+          });
+        }
+
+        const newDiamondsInInventory = newPlayer.inventory.items
+          .filter((item: ItemStack | null) => item?.id === "DIAMOND")
+          .filter((item: ItemStack | null) => item !== null) as ItemStack[];
+
+        if (newDiamondsInInventory.length !== diamondsInInventory.length) {
+          const difference =
+            diamondsInInventory.length - newDiamondsInInventory.length;
+
+          for (let i = 0; i < difference; i++) {
+            await newPlayer.inventory.addItem(SingleDiamondB64);
+          }
         }
 
         throw new TRPCError({
