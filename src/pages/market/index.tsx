@@ -33,10 +33,8 @@ const Market: NextPage = () => {
   const depositDiamondsMutation = trpc.market.depositDiamonds.useMutation();
 
   const [sellItemModalOpened, setItemModalOpened] = useState(false);
-  const [depositDiamondsModalOpened, setDepositDiamondsModalOpened] =
-    useState(false);
+
   const [price, setPrice] = useState(1);
-  const [diamondsToDep, setDiamondsToDep] = useState(1);
   const [item, setItem] = useState<InventorySlotPayload>(null);
 
   if (sessionStatus === "loading") {
@@ -83,11 +81,7 @@ const Market: NextPage = () => {
 
   const handleDeposit = async () => {
     try {
-      await depositDiamondsMutation.mutateAsync({
-        amount: diamondsToDep,
-      });
-
-      setDepositDiamondsModalOpened(false);
+      await depositDiamondsMutation.mutateAsync();
 
       showNotification({
         message: "Diamonds deposited",
@@ -119,24 +113,7 @@ const Market: NextPage = () => {
         </div>
       </Modal>
 
-      <Modal
-        opened={depositDiamondsModalOpened}
-        onClose={() => setDepositDiamondsModalOpened(false)}
-        title="Deposit diamonds"
-      >
-        <div className="flex flex-col gap-2">
-          <input
-            type="number"
-            value={diamondsToDep}
-            onChange={(e) => setDiamondsToDep(Number(e.target.value))}
-          />
-          <button onClick={handleDeposit}>Deposit</button>
-        </div>
-      </Modal>
-
-      <button onClick={() => setDepositDiamondsModalOpened(true)}>
-        Deposit diamonds
-      </button>
+      <button onClick={handleDeposit}>Deposit diamonds</button>
 
       <h1 className="mb-4 text-4xl font-bold">Market</h1>
 

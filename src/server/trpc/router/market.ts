@@ -67,20 +67,13 @@ export const marketRouter = router({
         throw error;
       }
     }),
-  depositDiamonds: onlinePlayerMemberProcedure
-    .input(
-      z.object({
-        amount: z.number().positive().int().min(1),
-      })
-    )
-    .mutation(async ({ ctx: { player, prisma, user }, input: { amount } }) => {
-      console.log(player.inventory.items);
+  depositDiamonds: onlinePlayerMemberProcedure.mutation(
+    async ({ ctx: { player, prisma, user } }) => {
+      const diamondsInInventory = player.inventory.items
+        .filter((item: ItemStack | null) => item?.id === "DIAMOND")
+        .filter((item: ItemStack | null) => item !== null) as ItemStack[];
 
-      const diamondsInInventory = player.inventory.items.filter(
-        (item) => item?.id === "DIAMOND"
-      ).length;
-
-      if (diamondsInInventory < amount) {
+      if (diamondsInInventory.length === 0) {
         throw new TRPCError({
           code: "BAD_REQUEST",
           message: "Not enough diamonds in inventory",
@@ -88,22 +81,22 @@ export const marketRouter = router({
       }
 
       const takenItems: ItemStack[] = [];
+      let diamondsDeposited = 0;
 
       try {
-        for (let i = 0; i < amount; i++) {
-          const index = player.inventory.items.findIndex(
-            (item) => item?.id === "DIAMOND"
-          );
+        for (const diamond of diamondsInInventory) {
+          takenItems.push(diamond);
+          diamondsDeposited += diamond.amount;
 
-          await player.inventory.removeItem(index);
-          const stack = player.inventory.items[index];
-          if (stack) takenItems.push(stack);
+          await player.inventory.removeItem(
+            player.inventory.items.indexOf(diamond)
+          );
         }
 
         await prisma.user.update({
           data: {
             balance: {
-              increment: amount,
+              increment: diamondsDeposited,
             },
           },
           where: {
@@ -120,7 +113,8 @@ export const marketRouter = router({
           message: "Failed to deposit diamonds",
         });
       }
-    }),
+    }
+  ),
   balance: playerMemberProcedure.query(async ({ ctx: { user } }) => {
     return user.balance;
   }),
