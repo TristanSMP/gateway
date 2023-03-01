@@ -43,6 +43,7 @@ async function listItem(item: ItemStack, price: number, seller: User) {
   await prisma.auctionedItem.create({
     data: {
       price,
+      status: AuctionStatus.ACTIVE,
       seller: {
         connect: {
           id: seller.id,
