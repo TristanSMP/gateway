@@ -117,6 +117,17 @@ async function buyItem(
     },
   });
 
+  await prisma.user.update({
+    where: {
+      id: auctionedItem.seller.id,
+    },
+    data: {
+      balance: {
+        increment: auctionedItem.price,
+      },
+    },
+  });
+
   try {
     await prisma.auctionedItem.update({
       where: {
@@ -132,22 +143,7 @@ async function buyItem(
       },
     });
 
-    await buyerPlayer.inventory
-      .addItem(auctionedItem.type.base64)
-      .catch(async () => {
-        await prisma.user.update({
-          where: {
-            id: buyerUser.id,
-          },
-          data: {
-            balance: {
-              increment: auctionedItem.price,
-            },
-          },
-        });
-
-        throw new Error("Failed to add item to inventory");
-      });
+    await buyerPlayer.inventory.addItem(auctionedItem.type.base64);
   } catch (e) {
     throw new Error("Failed to buy item");
   }
