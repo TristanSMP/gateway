@@ -1,3 +1,4 @@
+import { CheckIcon, NoSymbolIcon } from "@heroicons/react/24/outline";
 import * as Mui from "@mui/material";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
@@ -26,7 +27,7 @@ const Admin: NextPage = () => {
       }
 
       if (onlyLinkedMinecraft) {
-        sortedUsers = sortedUsers.filter((user) => user.minecraft !== null);
+        sortedUsers = sortedUsers.filter((user) => user.minecraft);
       }
 
       if (search !== "") {
@@ -144,7 +145,11 @@ const Admin: NextPage = () => {
                       ))}
                     </Mui.TableCell>
                     <Mui.TableCell>
-                      {user.isMember ? "Yes" : "No"}
+                      {user.isMember ? (
+                        <CheckIcon width={25} />
+                      ) : (
+                        <NoSymbolIcon width={25} />
+                      )}
                     </Mui.TableCell>
                   </Mui.TableRow>
                 ))}
