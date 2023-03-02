@@ -41,13 +41,11 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     },
   });
 
-  if (direct) {
-    tsmpUser = direct;
-  }
+  tsmpUser = direct;
 
-  const resolvedViaDiscord = await getTSMPUser(json.player).catch(() => null);
-
-  if (resolvedViaDiscord) {
+  // If not found by id, try to find via discord id
+  if (!tsmpUser) {
+    const resolvedViaDiscord = await getTSMPUser(json.player).catch(() => null);
     tsmpUser = resolvedViaDiscord;
   }
 
