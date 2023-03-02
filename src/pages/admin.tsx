@@ -71,7 +71,14 @@ const Admin: NextPage = () => {
               alignItems: "center",
             }}
           >
-            <Mui.Paper>
+            <Mui.Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+              }}
+            >
               <Mui.Chip
                 label="Members"
                 onClick={() => setOnlyMembers(!onlyMembers)}
@@ -88,6 +95,9 @@ const Admin: NextPage = () => {
                   p: 2,
                 }}
               />
+              <Mui.Typography variant="body1" sx={{ p: 2 }}>
+                {sortedUsers.length} users
+              </Mui.Typography>
             </Mui.Paper>
 
             <Mui.Paper sx={{ p: 2 }}>
