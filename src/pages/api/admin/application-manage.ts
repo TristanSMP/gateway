@@ -1,4 +1,10 @@
-import { ApplicationStatus } from "@prisma/client";
+import {
+  Account,
+  Application,
+  ApplicationStatus,
+  MinecraftAlternativeAccount,
+  User,
+} from "@prisma/client";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { prisma } from "../../../server/db/client";
@@ -11,12 +17,39 @@ import adminMiddleware from "../../../utils/adminMiddleware";
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const json = z
     .object({
-      player: z.string(), // discord id
+      player: z.string(), // discord id or tsmp id
       action: z.literal("NotMember").or(z.literal("Member")),
     })
     .parse(req.body);
 
-  const tsmpUser = await getTSMPUser(json.player);
+  let tsmpUser:
+    | (User & {
+        application: Application | null;
+        minecraftAlternativeAccounts: MinecraftAlternativeAccount[];
+        accounts: Account[];
+      })
+    | null = null;
+
+  const direct = await prisma.user.findUnique({
+    where: {
+      id: json.player,
+    },
+    include: {
+      application: true,
+      accounts: true,
+      minecraftAlternativeAccounts: true,
+    },
+  });
+
+  if (direct) {
+    tsmpUser = direct;
+  }
+
+  const resolvedViaDiscord = await getTSMPUser(json.player);
+
+  if (resolvedViaDiscord) {
+    tsmpUser = resolvedViaDiscord;
+  }
 
   if (!tsmpUser) {
     res.status(404).json({
