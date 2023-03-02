@@ -45,7 +45,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     tsmpUser = direct;
   }
 
-  const resolvedViaDiscord = await getTSMPUser(json.player);
+  const resolvedViaDiscord = await getTSMPUser(json.player).catch(() => null);
 
   if (resolvedViaDiscord) {
     tsmpUser = resolvedViaDiscord;
