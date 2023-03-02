@@ -1,6 +1,8 @@
 import * as Mui from "@mui/material";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+import { IAdminDashboardUser } from "../server/trpc/router/admin";
 import { we } from "../utils/mutationWrapper";
 import { trpc } from "../utils/trpc";
 
@@ -8,6 +10,24 @@ const Admin: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const deployBotMutation = trpc.discord.deployBotCommands.useMutation();
   const users = trpc.admin.getEveryUser.useQuery();
+
+  const [sortedUsers, setSortedUsers] = useState<IAdminDashboardUser[]>([]);
+  const [onlyMembers, setOnlyMembers] = useState<boolean>(false);
+  const [onlyLinkedMinecraft, setOnlyLinkedMinecraft] =
+    useState<boolean>(false);
+
+  useEffect(() => {
+    if (users.data) {
+      let sortedUsers = users.data;
+      if (onlyMembers) {
+        sortedUsers = sortedUsers.filter((user) => user.isMember);
+      }
+      if (onlyLinkedMinecraft) {
+        sortedUsers = sortedUsers.filter((user) => user.minecraft);
+      }
+      setSortedUsers(sortedUsers);
+    }
+  }, [users.data, onlyMembers, onlyLinkedMinecraft]);
 
   if (sessionStatus === "loading") {
     return <div>Loading...</div>;
@@ -31,8 +51,24 @@ const Admin: NextPage = () => {
           </Mui.Button>
         </Mui.Grid>
         <Mui.Grid item xs={12}>
+          <Mui.Chip
+            label="Members"
+            onClick={() => setOnlyMembers(!onlyMembers)}
+            variant={onlyMembers ? "filled" : "outlined"}
+            sx={{
+              p: 2,
+            }}
+          />
+          <Mui.Chip
+            label="Linked Minecraft"
+            onClick={() => setOnlyLinkedMinecraft(!onlyLinkedMinecraft)}
+            variant={onlyLinkedMinecraft ? "filled" : "outlined"}
+            sx={{
+              p: 2,
+            }}
+          />
+
           <Mui.TableContainer component={Mui.Paper}>
-            {/* sortable table */}
             <Mui.Table aria-label="simple table">
               <Mui.TableHead>
                 <Mui.TableRow>
@@ -45,7 +81,7 @@ const Admin: NextPage = () => {
                 </Mui.TableRow>
               </Mui.TableHead>
               <Mui.TableBody>
-                {users.data?.map((user) => (
+                {sortedUsers.map((user) => (
                   <Mui.TableRow key={user.id}>
                     <Mui.TableCell component="th" scope="row">
                       {user.id}
