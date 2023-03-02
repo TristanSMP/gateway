@@ -50,7 +50,9 @@ const DebugUser: Command = {
                   })`
                 : "No linked Minecraft account"
             }`,
-            `${Emoji.TristanSMP} ${tsmpUser ? `Yes (${tsmpUser.id})` : "No"}`,
+            `${Emoji.TristanSMP} ${
+              tsmpUser ? `Resolved TSMPU from Discord ${tsmpUser.id}` : "No"
+            }`,
             "",
             `**Application status** ${
               tsmpUser?.application?.status === ApplicationStatus.PendingReview
