@@ -44,6 +44,7 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
     minecraftUUID: uuid,
     minecraftUsername: profile.name,
     discordId: discord?.id ?? null,
+    tsmpuId: tsmpAcct.id,
   });
 }
 
