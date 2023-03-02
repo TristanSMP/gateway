@@ -19,6 +19,17 @@ export function getDiscordUser(accounts: Account[]): DiscordAccount {
   };
 }
 
+export function getDiscordUserSafe(accounts: Account[]): DiscordAccount | null {
+  const pac = accounts.find((a) => a.provider === "discord");
+  if (!pac) return null;
+  return {
+    id: pac.providerAccountId,
+    accessToken: pac.access_token,
+    refreshToken: pac.refresh_token,
+    expiresAt: pac.expires_at ?? null,
+  };
+}
+
 export async function getTSMPUser(discordUserId: string) {
   const user = await prisma.account.findUnique({
     where: {

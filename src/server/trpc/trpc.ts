@@ -145,3 +145,23 @@ export const onlinePlayerMemberProcedure = onlinePlayerProcedure.use(
     });
   }
 );
+
+/**
+ * adminProcedure (needs client to be logged in have admin dashboard access)
+ */
+export const adminProcedure = protectedProcedure.use(async ({ ctx, next }) => {
+  if (!ctx.user.canAccessAdminDashboard) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "You must be an admin to do this",
+    });
+  }
+
+  return next({
+    ctx: {
+      // infers the `session` as non-nullable
+      session: { ...ctx.session, user: ctx.session.user },
+      user: { ...ctx.user },
+    },
+  });
+});

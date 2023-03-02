@@ -61,10 +61,11 @@ model User {
   itemsOnMarket AuctionedItem[] @relation("AuctionedItemSeller")
   boughtItems   AuctionedItem[] @relation("AuctionedItemBuyer")
 
-  isBotAdmin    Boolean         @default(false)
-  application   Application?
-  Image         Image[]
-  AuctionedItem AuctionedItem[]
+  isBotAdmin              Boolean         @default(false) // Able to manage the "tsmp bot" (refresh commands)
+  canAccessAdminDashboard Boolean         @default(false)
+  application             Application?
+  Image                   Image[]
+  AuctionedItem           AuctionedItem[]
 }
 
 model MinecraftAlternativeAccount {

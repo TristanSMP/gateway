@@ -1,5 +1,7 @@
+import { ThemeProvider } from "@emotion/react";
 import { MantineProvider } from "@mantine/core";
 import { NotificationsProvider } from "@mantine/notifications";
+import { createTheme } from "@mui/material/styles";
 import { Analytics } from "@vercel/analytics/react";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
@@ -9,6 +11,12 @@ import { Footer } from "../components/Footer";
 import { NavBar } from "../components/NavBar";
 import "../styles/globals.css";
 import { trpc } from "../utils/trpc";
+
+const theme = createTheme({
+  palette: {
+    mode: "dark",
+  },
+});
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -32,19 +40,20 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <Analytics />
-
       <MantineProvider
         theme={{
           colorScheme: "dark",
         }}
       >
-        <NotificationsProvider>
-          {wrapApp ? (
-            layoutWrapper(<Component {...pageProps} />)
-          ) : (
-            <Component {...pageProps} />
-          )}
-        </NotificationsProvider>
+        <ThemeProvider theme={theme}>
+          <NotificationsProvider>
+            {wrapApp ? (
+              layoutWrapper(<Component {...pageProps} />)
+            ) : (
+              <Component {...pageProps} />
+            )}
+          </NotificationsProvider>
+        </ThemeProvider>
       </MantineProvider>
     </SessionProvider>
   );

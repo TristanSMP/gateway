@@ -106,7 +106,7 @@ const MarketItem: NextPage = () => {
               <h3 className="sr-only">Description</h3>
 
               <div className="space-y-6">
-                <p className="text-base">some minecraft item lmfao</p>
+                <p className="text-base">{itemQuery.data.type}</p>
               </div>
             </div>
 
