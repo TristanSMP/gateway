@@ -32,8 +32,8 @@ const Admin: NextPage = () => {
 
       if (search !== "") {
         sortedUsers = sortedUsers.filter((user) => {
-          const userString = JSON.stringify(user); // 🤓
-          return userString.includes(search);
+          const userString = JSON.stringify(user).toLowerCase(); // 🤓
+          return userString.includes(search.toLowerCase());
         });
       }
 
