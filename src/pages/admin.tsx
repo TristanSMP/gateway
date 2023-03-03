@@ -11,12 +11,16 @@ const Admin: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
   const deployBotMutation = trpc.discord.deployBotCommands.useMutation();
   const users = trpc.admin.getEveryUser.useQuery();
+  const syncUserMutation = trpc.admin.reSyncUser.useMutation();
 
   const [sortedUsers, setSortedUsers] = useState<IAdminDashboardUser[]>([]);
   const [onlyMembers, setOnlyMembers] = useState<boolean>(false);
   const [onlyLinkedMinecraft, setOnlyLinkedMinecraft] =
     useState<boolean>(false);
   const [search, setSearch] = useState<string>("");
+  const [syncUserJsonModalOpened, setSyncUserJsonModalOpened] =
+    useState<boolean>(false);
+  const [syncUserJson, setSyncUserJson] = useState<string>("");
 
   useEffect(() => {
     if (users.data) {
@@ -41,6 +45,17 @@ const Admin: NextPage = () => {
     }
   }, [users.data, onlyMembers, onlyLinkedMinecraft, search]);
 
+  async function handleRefreshUser(user: IAdminDashboardUser) {
+    setSyncUserJsonModalOpened(true);
+    setSyncUserJson("loading...");
+
+    const data = await syncUserMutation.mutateAsync({
+      id: user.id,
+    });
+
+    setSyncUserJson(JSON.stringify(data, null, 2));
+  }
+
   if (sessionStatus === "loading") {
     return <div>Loading...</div>;
   }
@@ -51,6 +66,22 @@ const Admin: NextPage = () => {
 
   return (
     <Mui.Container>
+      <Mui.Dialog open={syncUserJsonModalOpened}>
+        <Mui.DialogTitle>Sync User JSON</Mui.DialogTitle>
+        <Mui.DialogContent>
+          <pre>{syncUserJson}</pre>
+        </Mui.DialogContent>
+        <Mui.DialogActions>
+          <Mui.Button
+            onClick={() => {
+              setSyncUserJsonModalOpened(false);
+            }}
+          >
+            Close
+          </Mui.Button>
+        </Mui.DialogActions>
+      </Mui.Dialog>
+
       <Mui.Grid container spacing={2}>
         <Mui.Grid item xs={12}>
           <Mui.Button
@@ -145,11 +176,13 @@ const Admin: NextPage = () => {
                       ))}
                     </Mui.TableCell>
                     <Mui.TableCell>
-                      {user.isMember ? (
-                        <CheckIcon width={25} />
-                      ) : (
-                        <NoSymbolIcon width={25} />
-                      )}
+                      <button onClick={() => handleRefreshUser(user)}>
+                        {user.isMember ? (
+                          <CheckIcon width={25} />
+                        ) : (
+                          <NoSymbolIcon width={25} />
+                        )}
+                      </button>
                     </Mui.TableCell>
                   </Mui.TableRow>
                 ))}

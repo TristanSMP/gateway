@@ -1,4 +1,7 @@
 import { ApplicationStatus } from "@prisma/client";
+import { z } from "zod";
+import { updateRoleMeta } from "../../lib/discord";
+import { syncUser } from "../../lib/linking";
 import { UUIDToProfile } from "../../lib/minecraft";
 import { getDiscordUserSafe } from "../../lib/utils";
 import { adminProcedure, router } from "../trpc";
@@ -103,4 +106,38 @@ export const adminRouter = router({
 
     return mappedUsers;
   }),
+  reSyncUser: adminProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      })
+    )
+    .mutation(async ({ ctx: { prisma }, input }) => {
+      const tsmpu = await prisma.user.findUnique({
+        where: {
+          id: input.id,
+        },
+        include: {
+          minecraftAlternativeAccounts: true,
+          accounts: true,
+          application: true,
+        },
+      });
+
+      if (!tsmpu) {
+        throw new Error("User not found!");
+      }
+
+      const mcSync = await syncUser(tsmpu)
+        .then(() => true)
+        .catch(() => false);
+      const discSync = await updateRoleMeta(tsmpu)
+        .then(() => true)
+        .catch(() => false);
+
+      return {
+        mcSync,
+        discSync,
+      };
+    }),
 });
