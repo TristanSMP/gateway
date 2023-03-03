@@ -3,6 +3,7 @@ import { adminRouter } from "./admin";
 import { authRouter } from "./auth";
 import { discordRouter } from "./discord";
 import { marketRouter } from "./market";
+import { metaRouter } from "./meta";
 import { onboardingRouter } from "./onboarding";
 
 export const appRouter = router({
@@ -11,6 +12,7 @@ export const appRouter = router({
   onboarding: onboardingRouter,
   discord: discordRouter,
   admin: adminRouter,
+  meta: metaRouter,
 });
 
 export type AppRouter = typeof appRouter;

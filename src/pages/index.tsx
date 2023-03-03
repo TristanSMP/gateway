@@ -1,44 +1,10 @@
-import { Tooltip } from "@mantine/core";
-import type {
-  GetServerSidePropsContext,
-  InferGetServerSidePropsType,
-  NextPage,
-} from "next";
+import type { NextPage } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import Features from "../components/Features";
 import PlayersOnlineHero from "../components/PlayersOnlineHero";
-import { elytra } from "../server/db/client";
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
-  try {
-    const players = await elytra.players.get();
-
-    return {
-      props: {
-        players: players.map((player) => {
-          return {
-            name: player.name,
-            uuid: player.uuid,
-          };
-        }),
-      },
-    };
-  } catch (error) {
-    console.error(error);
-    return {
-      props: {
-        players: [],
-      },
-    };
-  }
-};
-
-const Home: NextPage<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = ({ players }) => {
+const Home: NextPage = () => {
   return (
     <>
       <div className="flex min-h-screen flex-col bg-base-200">
@@ -104,7 +70,7 @@ const Home: NextPage<
             </div>
           </>
 
-          <PlayersOnlineHero players={players} />
+          <PlayersOnlineHero />
           <Features />
 
           <div>
@@ -142,11 +108,7 @@ const Home: NextPage<
                     Join us today,
                     <br />
                     and be a part of our growing{" "}
-                    <Tooltip
-                      label={`There's currently ${players.length} players online!`}
-                    >
-                      <div className="text-primary">community</div>
-                    </Tooltip>
+                    <div className="text-primary">community</div>
                   </h2>
                   <p className="mt-6 text-lg leading-8 text-gray-300">
                     Simply start the onboarding process by clicking the button
