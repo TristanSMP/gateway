@@ -44,7 +44,7 @@ const Home: NextPage = () => {
                   <h1 className="text-5xl font-bold text-info">
                     Tristan SMP for,{" "}
                     <span className="text-primary shadow-purple-600 drop-shadow-2xl">
-                      everyone todo add auth0 hero
+                      everyone
                     </span>
                     .
                   </h1>
