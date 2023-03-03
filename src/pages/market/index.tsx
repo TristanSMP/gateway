@@ -29,7 +29,6 @@ const Market: NextPage = () => {
   );
 
   const sellItemMutation = trpc.market.sellItem.useMutation();
-  const depositDiamondsMutation = trpc.market.depositDiamonds.useMutation();
 
   const [sellItemModalOpened, setItemModalOpened] = useState(false);
 
@@ -68,23 +67,6 @@ const Market: NextPage = () => {
 
         inventoryQuery.refetch();
       }
-    } catch (e) {
-      if (e instanceof TRPCClientError) {
-        showNotification({
-          message: e.message,
-          color: "red",
-        });
-      }
-    }
-  };
-
-  const handleDeposit = async () => {
-    try {
-      await depositDiamondsMutation.mutateAsync();
-
-      showNotification({
-        message: "Diamonds deposited",
-      });
     } catch (e) {
       if (e instanceof TRPCClientError) {
         showNotification({
@@ -134,7 +116,6 @@ const Market: NextPage = () => {
             <Mui.Typography variant="h3" component="h3">
               you have {balanceQuery.data ?? "Loading..."} diamonds
             </Mui.Typography>
-            <Mui.Button onClick={handleDeposit}>Deposit diamonds</Mui.Button>
           </Mui.Grid>
           <Mui.Grid item xs={12}>
             <Mui.Typography variant="body1" component="p">
