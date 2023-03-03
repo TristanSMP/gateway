@@ -1,7 +1,6 @@
+import { Bars3Icon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { ProfileIcon } from "./ProfileIcon";
-import { Bars3Icon } from "@heroicons/react/24/outline";
-import { GitHubRepo } from "../utils/Constants";
 
 const links: { name: string; href: string; newTab: boolean }[] = [
   {
@@ -15,9 +14,9 @@ const links: { name: string; href: string; newTab: boolean }[] = [
     newTab: true,
   },
   {
-    name: "GitHub",
-    href: GitHubRepo,
-    newTab: true,
+    name: "Market",
+    href: "/market",
+    newTab: false,
   },
 ];
 
