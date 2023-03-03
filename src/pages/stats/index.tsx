@@ -12,35 +12,37 @@ const Stats: NextPage = () => {
         <section className="">
           <div className="flex h-screen flex-col items-center justify-center">
             <Image
-              className="rounded-full transition-all duration-500 ease-in-out hover:scale-110 hover:drop-shadow-2xl"
+              className="h-36 w-36 rounded-full transition-all duration-500 ease-in-out hover:scale-110 hover:drop-shadow-2xl"
               src="/assets/images/TLogo.png"
               alt="TSMP Logo"
               width={250}
               height={352}
             />
-            <div className="m-10 py-8 px-10 text-center text-3xl text-white">
-              TSMPstats is a tool for TSMP players to see their stats.
+            <div className="py-8 text-center text-3xl">
+              <div className="mb-8 px-2">
+                TSMPstats is a tool for TSMP players to see their stats.
+              </div>
               <form
-                className=" items-center justify-center"
+                className="items-center justify-center"
                 onSubmit={(e) => {
                   e.preventDefault();
                   router.push(`/stats/${username}`);
                 }}
               >
-                <input
-                  className="m-2 rounded-full bg-gray-800 px-4 py-2 text-white"
-                  type="text"
-                  name="username"
-                  placeholder="Username"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-                <button
-                  className="m-2 rounded-full bg-gray-800 px-4 py-2 text-white"
-                  type="submit"
-                >
-                  Look-up
-                </button>
+                <div className="justify-center sm:input-group">
+                  <input
+                    className="input-bordered input mb-4 w-full max-w-xs"
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                  <br />
+                  <button className="btn-primary btn" type="submit">
+                    Look up
+                  </button>
+                </div>
               </form>
             </div>
           </div>

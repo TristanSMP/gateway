@@ -7,10 +7,10 @@ export default function PlayersOnlineHero() {
   const playersQuery = trpc.meta.getPlayerList.useQuery();
 
   return (
-    <div className="">
+    <div className="bg-base-300 py-8 shadow-md">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="sm:text-center">
-          <p className="mt-2 text-3xl font-bold tracking-tight sm:text-4xl">
+          <p className="text-3xl font-bold tracking-tight sm:text-4xl">
             Online Players
           </p>
         </div>

@@ -70,8 +70,8 @@ const StatsViewer: NextPage<
       </Head>
 
       <section className="">
-        <div className="flex h-screen items-center justify-center">
-          <div className="m-10 py-8 px-10 text-center text-3xl font-extrabold text-white">
+        <div className="flex flex-col items-center justify-center md:h-screen md:flex-row">
+          <div className="mx-10 my-5 py-8 px-10 text-center text-3xl font-bold">
             <canvas
               id="skinviewer"
               className="h-full w-full"
@@ -92,22 +92,22 @@ const StatsViewer: NextPage<
             {username}
           </div>
 
-          <div className="relative flex min-w-0 flex-col break-words rounded-lg bg-gray-900 ">
-            <div className="mb-0 rounded-t-lg bg-gray-200 py-3 px-6 text-gray-900">
+          <div className="relative mb-8 flex w-[85%] min-w-0 flex-col break-words rounded-lg bg-gray-900 md:mb-0 md:w-72">
+            <div className="mb-0 rounded-t-lg bg-gray-200 py-3 px-8 text-gray-900">
               <strong>McMMO Stats</strong>
             </div>
-            <div className="flex-auto bg-gray-800 p-8 py-1">
+            <div className="flex-auto rounded-b-lg bg-base-300 py-4 px-4">
               {Object.entries(mcmmoData).map(([skillName, skillValue]) => {
                 if (skillValue === false) return null;
 
                 return (
                   <>
-                    <div className="no-gutters flex flex-wrap items-center">
-                      <div className="relative max-w-full flex-1 flex-grow px-8 pr-4 pl-4 text-gray-300 lg:order-1">
+                    <div className="flex items-center">
+                      <div className="relative max-w-full px-8 pr-4 pl-4 text-gray-300 lg:order-1">
                         <p>{skillName}</p>
                       </div>
                       <div
-                        className="relative w-full lg:order-2 lg:flex-1 lg:flex-grow"
+                        className="relative w-full px-8 pr-4 pl-4 text-right lg:order-2 lg:flex-1 lg:flex-grow"
                         style={{ fontSize: "90%" }}
                       >
                         <p className="font-mono text-xl font-extrabold text-gray-200">
