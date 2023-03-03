@@ -9,14 +9,19 @@ const links: { name: string; href: string; newTab: boolean }[] = [
     newTab: false,
   },
   {
-    name: "Discord",
-    href: "/discord",
-    newTab: true,
-  },
-  {
     name: "Market",
     href: "/market",
     newTab: false,
+  },
+  {
+    name: "Stats",
+    href: "/stats",
+    newTab: false,
+  },
+  {
+    name: "Discord",
+    href: "/discord",
+    newTab: true,
   },
 ];
 

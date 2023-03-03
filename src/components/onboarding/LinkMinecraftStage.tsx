@@ -35,30 +35,32 @@ const LinkMinecraftStage: React.FC<{
           </p>
 
           <div>
-            <div className="flex flex-row py-5">
+            <div className="input-group py-5">
               <input
                 type="text"
                 placeholder="Minecraft username"
                 value={inputUsername}
                 onChange={(e) => setInputUsername(e.target.value)}
-                className="input-bordered input mt-5 -ml-0.5 w-full max-w-xs"
+                className="input-bordered input mt-5 -ml-0.5"
               />
 
               <button
                 onClick={() => {
                   setBedrock(!bedrock);
                 }}
-                className="btn-secondary btn mt-5 -ml-0.5 w-1/3 max-w-xs"
+                className="btn btn-secondary mt-5 -ml-0.5 w-1/3 max-w-fit"
               >
                 {bedrock ? "Bedrock" : "Java"}
               </button>
             </div>
 
+            <br />
+
             <button
               onClick={() => {
                 setUsername(bedrock ? `.${inputUsername}` : inputUsername);
               }}
-              className={`btn-primary btn ${
+              className={`btn btn-primary ${
                 profile.isLoading && username !== "" ? "loading" : ""
               }`}
               disabled={
@@ -110,7 +112,7 @@ const LinkMinecraftStage: React.FC<{
             continue.
           </p>
           <button
-            className="btn-primary btn mt-3"
+            className="btn btn-primary mt-3"
             onClick={
               profile.data.online
                 ? next

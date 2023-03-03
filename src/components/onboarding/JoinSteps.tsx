@@ -10,7 +10,7 @@ const JoinSteps: React.FC = () => {
       <Instruction step="1">
         Join the Discord server:{" "}
         <a className="link" href="/discord" target="_blank">
-          https://new.tristansmp.com/discord
+          https://tristansmp.com/discord
         </a>
         <div className="mt-1 max-w-[24rem]">
           <Image
@@ -31,7 +31,8 @@ const JoinSteps: React.FC = () => {
         </div>
       </Instruction>
       <Instruction step="3">
-        Enter <strong>tristansmp.com</strong> into Server Address
+        Enter <strong>tristansmp.com</strong> (Java) or{" "}
+        <strong>mc.tristansmp.com</strong> (Bedrock) into Server Address
         <div className="mt-1 max-w-[24rem]">
           <Image
             src={imgMinecraftServerAddress}
