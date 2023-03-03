@@ -1,8 +1,6 @@
 import { AuctionStatus } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
-import type { ItemStack } from "elytra";
 import { z } from "zod";
-import { SingleDiamondB64 } from "../../../utils/Constants";
 import { MarketSerializer } from "../../lib/market/serialization";
 import { MarketUtils } from "../../lib/market/utils";
 import {
@@ -68,79 +66,82 @@ export const marketRouter = router({
         throw error;
       }
     }),
-  depositDiamonds: onlinePlayerMemberProcedure.mutation(
-    async ({ ctx: { player, prisma, elytra, user } }) => {
-      const diamondsInInventory = player.inventory.items
-        .map((item: ItemStack | null, index: number) => ({
-          item,
-          index,
-        }))
-        .filter((item) => item.item?.id === "DIAMOND")
-        .filter((item) => item.item !== null) as {
-        item: ItemStack;
-        index: number;
-      }[];
+  depositDiamonds: onlinePlayerMemberProcedure.mutation(async ({}) => {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "bug found in depositDiamonds",
+    });
 
-      if (diamondsInInventory.length === 0) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Not enough diamonds in inventory",
-        });
-      }
+    // const diamondsInInventory = player.inventory.items
+    //   .map((item: ItemStack | null, index: number) => ({
+    //     item,
+    //     index,
+    //   }))
+    //   .filter((item) => item.item?.id === "DIAMOND")
+    //   .filter((item) => item.item !== null) as {
+    //   item: ItemStack;
+    //   index: number;
+    // }[];
 
-      let diamondsDeposited = 0;
+    // if (diamondsInInventory.length === 0) {
+    //   throw new TRPCError({
+    //     code: "BAD_REQUEST",
+    //     message: "Not enough diamonds in inventory",
+    //   });
+    // }
 
-      try {
-        for (const diamond of diamondsInInventory) {
-          diamondsDeposited += diamond.item.amount;
+    // let diamondsDeposited = 0;
 
-          console.log(diamond);
+    // try {
+    //   for (const diamond of diamondsInInventory) {
+    //     diamondsDeposited += diamond.item.amount;
 
-          await player.inventory.removeItem(diamond.index);
-        }
+    //     console.log(diamond);
 
-        await prisma.user.update({
-          data: {
-            balance: {
-              increment: diamondsDeposited,
-            },
-          },
-          where: {
-            id: user.id,
-          },
-        });
-      } catch (error) {
-        console.error(error);
+    //     await player.inventory.removeItem(diamond.index);
+    //   }
 
-        const newPlayer = await elytra.players.get(player.uuid);
+    //   await prisma.user.update({
+    //     data: {
+    //       balance: {
+    //         increment: diamondsDeposited,
+    //       },
+    //     },
+    //     where: {
+    //       id: user.id,
+    //     },
+    //   });
+    // } catch (error) {
+    //   console.error(error);
 
-        if (!newPlayer) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "Failed to deposit diamonds",
-          });
-        }
+    //   const newPlayer = await elytra.players.get(player.uuid);
 
-        const newDiamondsInInventory = newPlayer.inventory.items
-          .filter((item: ItemStack | null) => item?.id === "DIAMOND")
-          .filter((item: ItemStack | null) => item !== null) as ItemStack[];
+    //   if (!newPlayer) {
+    //     throw new TRPCError({
+    //       code: "INTERNAL_SERVER_ERROR",
+    //       message: "Failed to deposit diamonds",
+    //     });
+    //   }
 
-        if (newDiamondsInInventory.length !== diamondsInInventory.length) {
-          const difference =
-            diamondsInInventory.length - newDiamondsInInventory.length;
+    //   const newDiamondsInInventory = newPlayer.inventory.items
+    //     .filter((item: ItemStack | null) => item?.id === "DIAMOND")
+    //     .filter((item: ItemStack | null) => item !== null) as ItemStack[];
 
-          for (let i = 0; i < difference; i++) {
-            await newPlayer.inventory.addItem(SingleDiamondB64);
-          }
-        }
+    //   if (newDiamondsInInventory.length !== diamondsInInventory.length) {
+    //     const difference =
+    //       diamondsInInventory.length - newDiamondsInInventory.length;
 
-        throw new TRPCError({
-          code: "INTERNAL_SERVER_ERROR",
-          message: "Failed to deposit diamonds",
-        });
-      }
-    }
-  ),
+    //     for (let i = 0; i < difference; i++) {
+    //       await newPlayer.inventory.addItem(SingleDiamondB64);
+    //     }
+    //   }
+
+    //   throw new TRPCError({
+    //     code: "INTERNAL_SERVER_ERROR",
+    //     message: "Failed to deposit diamonds",
+    //   });
+    // }
+  }),
   balance: playerMemberProcedure.query(async ({ ctx: { user } }) => {
     return user.balance;
   }),
