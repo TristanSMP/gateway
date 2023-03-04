@@ -32,7 +32,11 @@ async function getItemType(hashedItem: string) {
       b64key: hashedItem,
     },
     include: {
-      stock: true,
+      stock: {
+        include: {
+          seller: true,
+        },
+      },
     },
   });
 }
