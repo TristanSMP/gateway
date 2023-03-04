@@ -1,6 +1,6 @@
 import Image from "next/image";
-import Instruction from "../Instruction";
 import imgMinecraftVerifyCode from "../../../public/assets/images/onboarding/minecraft-verify-code.png";
+import Instruction from "../Instruction";
 
 const VerifySteps: React.FC<{ code: string }> = ({ code }) => {
   return (
@@ -16,11 +16,13 @@ const VerifySteps: React.FC<{ code: string }> = ({ code }) => {
               type="text"
               placeholder="Loading…"
               className="input-bordered input input-sm w-20 font-mono"
-              value={code && `~${code}`}
+              value={code && `/link ${code}`}
             />
             <button
               className="btn-sm btn"
-              onClick={() => code && navigator.clipboard.writeText(`~${code}`)}
+              onClick={() =>
+                code && navigator.clipboard.writeText(`/link ${code}`)
+              }
             >
               Copy
             </button>
@@ -30,7 +32,7 @@ const VerifySteps: React.FC<{ code: string }> = ({ code }) => {
         <div className="mt-1 max-w-[24rem]">
           <Image
             src={imgMinecraftVerifyCode}
-            alt="~YOUR_CODE_HERE entered into the chat"
+            alt="/link YOUR_CODE_HERE entered into the chat"
             className="rounded-md"
           />
         </div>

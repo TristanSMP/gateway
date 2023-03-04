@@ -1,8 +1,8 @@
 import { showNotification } from "@mantine/notifications";
 import { TRPCClientError } from "@trpc/client";
 import React, { useCallback, useEffect, useState } from "react";
-import { trpc } from "../../utils/trpc";
 import VerifySteps from "../../components/onboarding/VerifySteps";
+import { trpc } from "../../utils/trpc";
 
 const VerifyMinecraftStage: React.FC<{
   username: string;
@@ -71,8 +71,7 @@ const VerifyMinecraftStage: React.FC<{
           <h1 className="text-2xl">Verify Minecraft</h1>
 
           <p className="mt-1 text-sm">
-            Link your Minecraft account by entering the following code into
-            chat:
+            Link your Minecraft account by using the command below in-game.
           </p>
 
           <div>
@@ -81,12 +80,12 @@ const VerifyMinecraftStage: React.FC<{
                 type="text"
                 placeholder="Loading…"
                 className="input-bordered input font-mono"
-                value={code && `~${code}`}
+                value={code && `/link ${code}`}
               />
               <button
                 className="btn"
                 onClick={() =>
-                  code && navigator.clipboard.writeText(`~${code}`)
+                  code && navigator.clipboard.writeText(`/link ${code}`)
                 }
               >
                 Copy
