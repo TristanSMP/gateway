@@ -1,6 +1,6 @@
 import type { AuctionedItem, ItemType, User } from "@prisma/client";
 import { AuctionStatus } from "@prisma/client";
-import type { ItemStack, Player } from "elytra";
+import type { ItemStack } from "elytra";
 import { sha256 } from "../../../utils/hashing";
 import { prisma } from "../../db/client";
 import { BarrierTexture, ItemTextures } from "../textures";
@@ -95,8 +95,7 @@ async function buyItem(
     type: ItemType | null;
     seller: User;
   },
-  buyerUser: User,
-  buyerPlayer: Player
+  buyerUser: User
 ) {
   if (auctionedItem.status !== AuctionStatus.ACTIVE) {
     throw new Error("Item is not for sale");
@@ -114,6 +113,11 @@ async function buyItem(
     throw new Error("You cannot afford this item");
   }
 
+  /**
+   * Stage 1: Transactions
+   */
+
+  // Decrement buyer's balance
   await prisma.user.update({
     where: {
       id: buyerUser.id,
@@ -125,6 +129,7 @@ async function buyItem(
     },
   });
 
+  // Increment seller's balance
   await prisma.user.update({
     where: {
       id: auctionedItem.seller.id,
@@ -136,13 +141,17 @@ async function buyItem(
     },
   });
 
+  /**
+   * Stage 2: Modify item to be ready for delivery state
+   */
+
   try {
     await prisma.auctionedItem.update({
       where: {
         id: auctionedItem.id,
       },
       data: {
-        status: AuctionStatus.SOLD,
+        status: AuctionStatus.IN_TRANSIT,
         buyer: {
           connect: {
             id: buyerUser.id,
@@ -150,10 +159,10 @@ async function buyItem(
         },
       },
     });
-
-    await buyerPlayer.inventory.addItem(auctionedItem.type.base64);
   } catch (e) {
-    throw new Error("Failed to buy item");
+    const nonce = Math.random().toString(36).substring(7);
+    console.error(`Failed to update item state: ${nonce}`, e);
+    throw new Error(`Failed to update item state (nonce: ${nonce})`);
   }
 }
 

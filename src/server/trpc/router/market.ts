@@ -69,13 +69,13 @@ export const marketRouter = router({
   balance: playerMemberProcedure.query(async ({ ctx: { user } }) => {
     return user.balance;
   }),
-  buyItem: onlinePlayerMemberProcedure
+  buyItem: playerMemberProcedure
     .input(
       z.object({
         id: z.string(), // id of the auctioneditem
       })
     )
-    .mutation(async ({ ctx: { player, user, prisma }, input: { id } }) => {
+    .mutation(async ({ ctx: { user, prisma }, input: { id } }) => {
       const auctionedItem = await prisma.auctionedItem.findFirst({
         where: {
           id,
@@ -94,7 +94,7 @@ export const marketRouter = router({
         });
       }
 
-      await MarketUtils.items.buyItem(auctionedItem, user, player);
+      await MarketUtils.items.buyItem(auctionedItem, user);
 
       return true;
     }),
