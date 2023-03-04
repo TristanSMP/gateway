@@ -95,7 +95,7 @@ const MarketItem: NextPage = () => {
                   buyItem(itemQuery.data.cheapest.id);
                 }}
               >
-                buy from the cheapest seller
+                Buy from cheapest seller ({itemQuery.data.cheapest?.name})
               </button>
             </form>
           </div>
@@ -129,7 +129,7 @@ const MarketItem: NextPage = () => {
                   {itemQuery.data.sellers.map((seller) => (
                     <tr key={seller.id}>
                       <td className="whitespace-nowrap px-6 py-4 text-sm">
-                        the sellers name should be here when the api returns it
+                        {seller.name}
                       </td>
                       <td className="whitespace-nowrap px-6 py-4 text-sm">
                         {seller.price} diamonds{" "}

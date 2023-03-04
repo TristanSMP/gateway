@@ -1,4 +1,4 @@
-import type { AuctionedItem, ItemType } from "@prisma/client";
+import type { AuctionedItem, ItemType, User } from "@prisma/client";
 import type { ItemStack } from "elytra";
 import { MarketUtils } from "./utils";
 
@@ -60,6 +60,11 @@ export interface DiscoveredItemPayload extends PartialItemPayload {
      * The auctioned item id
      */
     id: string;
+
+    /**
+     * The seller's name
+     */
+    name: string;
   }[];
 
   /**
@@ -72,12 +77,19 @@ export interface DiscoveredItemPayload extends PartialItemPayload {
      * The auctioned item id
      */
     id: string;
+
+    /**
+     * The seller's name
+     */
+    name: string;
   } | null;
 }
 
 function serializeDiscoveredItem(
   item: ItemType & {
-    stock: AuctionedItem[];
+    stock: (AuctionedItem & {
+      seller: User;
+    })[];
   }
 ): DiscoveredItemPayload {
   const cheapest =
@@ -94,12 +106,14 @@ function serializeDiscoveredItem(
     sellers: item.stock.map((stock) => ({
       price: stock.price,
       id: stock.id,
+      name: stock.seller.name || "Unknown",
     })),
     id: item.b64key,
     cheapest: cheapest
       ? {
           price: cheapest.price,
           id: cheapest.id,
+          name: cheapest.seller.name || "Unknown",
         }
       : null,
   };

@@ -73,7 +73,11 @@ function findItemTexture(namespacedId: string): string {
 async function getDiscoveredItemTypes() {
   const discoveredItems = await prisma.itemType.findMany({
     include: {
-      stock: true,
+      stock: {
+        include: {
+          seller: true,
+        },
+      },
     },
   });
 
