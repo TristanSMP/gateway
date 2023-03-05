@@ -77,6 +77,7 @@ const Market: NextPage = () => {
                           </Mui.Icon>
 
                           <Mui.Link href={`/market/${item.id}`}>
+                            {item.amount > 1 ? `${item.amount} x ` : ""}{" "}
                             {item.name}
                           </Mui.Link>
                         </Mui.TableCell>
