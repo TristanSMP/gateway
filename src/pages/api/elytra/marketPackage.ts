@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { env } from "../../../env/server.mjs";
 import { elytra, prisma } from "../../../server/db/client";
-import { MarketUtils } from "../../../server/lib/market/utils.js";
+import { MarketUtils } from "../../../server/lib/market/utils";
 
 export default async function handler(
   req: NextApiRequest,
@@ -30,6 +30,8 @@ export default async function handler(
   if (!user) {
     return res.status(400).json({ error: "User not found" });
   }
+
+  await elytra.setup();
 
   const item = new ItemStack(elytra, data.item);
 
