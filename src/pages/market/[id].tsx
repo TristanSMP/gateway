@@ -94,8 +94,13 @@ const MarketItem: NextPage = () => {
                     });
                   buyItem(itemQuery.data.cheapest.id);
                 }}
+                disabled={!itemQuery.data.cheapest}
               >
-                Buy from cheapest seller ({itemQuery.data.cheapest?.name})
+                {itemQuery.data.cheapest ? (
+                  <>Buy from cheapest seller ({itemQuery.data.cheapest.name})</>
+                ) : (
+                  <>No sellers!</>
+                )}
               </button>
             </form>
           </div>
