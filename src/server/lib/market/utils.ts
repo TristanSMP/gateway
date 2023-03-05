@@ -84,6 +84,9 @@ async function getDiscoveredItemTypes() {
         include: {
           seller: true,
         },
+        where: {
+          status: AuctionStatus.ACTIVE,
+        },
       },
     },
   });
