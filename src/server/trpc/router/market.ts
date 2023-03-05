@@ -38,8 +38,17 @@ export const marketRouter = router({
 
     return items;
   }),
-  balance: playerMemberProcedure.query(async ({ ctx: { user } }) => {
-    return user.balance;
+  balance: playerMemberProcedure.query(async ({ ctx: { user, prisma } }) => {
+    const itemsInTransit = await prisma.auctionedItem.count({
+      where: {
+        buyer: {
+          id: user.id,
+        },
+        status: AuctionStatus.IN_TRANSIT,
+      },
+    });
+
+    return { balance: user.balance, itemsInTransit };
   }),
   buyItem: playerMemberProcedure
     .input(

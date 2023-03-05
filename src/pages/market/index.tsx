@@ -33,8 +33,21 @@ const Market: NextPage = () => {
         <Mui.Grid container spacing={3}>
           <Mui.Grid item xs={12}>
             <Mui.Typography variant="h3" component="h3">
-              you have {balanceQuery.data ?? "Loading..."} diamonds
+              You have {balanceQuery.data?.balance ?? "Loading..."} diamonds,
             </Mui.Typography>
+            <Mui.Typography variant="h4" component="h3">
+              and {balanceQuery.data?.itemsInTransit ?? "Loading..."} items in
+              transit.
+            </Mui.Typography>
+
+            {balanceQuery.data?.itemsInTransit ? (
+              balanceQuery.data.itemsInTransit > 0
+            ) : false ? (
+              <Mui.Typography variant="body1" component="p">
+                Use <pre className="inline">/deliver</pre> in-game to receive
+                your items.
+              </Mui.Typography>
+            ) : null}
           </Mui.Grid>
 
           <Mui.Grid item xs={12}>
@@ -45,7 +58,10 @@ const Market: NextPage = () => {
           <Mui.Grid item xs={12}>
             <Mui.Typography variant="body1" component="p">
               These are the items the market has &quot;discovered&quot;. Items
-              are discovered from the first time a unique item is published.
+              are discovered from the first time a unique item is put for sale.
+              You can sell items by using{" "}
+              <pre className="inline">/package &lt;amount&gt;</pre> in-game
+              while holding an item.
             </Mui.Typography>
           </Mui.Grid>
 
