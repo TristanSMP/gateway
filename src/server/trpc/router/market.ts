@@ -38,34 +38,6 @@ export const marketRouter = router({
 
     return items;
   }),
-  sellItem: onlinePlayerMemberProcedure
-    .input(
-      z.object({
-        index: z.number(),
-        price: z.number().positive().int().min(1),
-      })
-    )
-    .mutation(async ({ ctx: { user, player }, input: { index, price } }) => {
-      const item = player.inventory.items[index];
-
-      if (!item) {
-        throw new TRPCError({
-          code: "BAD_REQUEST",
-          message: "Item not found",
-        });
-      }
-
-      await player.inventory.removeItem(index);
-
-      try {
-        await MarketUtils.items.listItem(item, price, user);
-
-        return true;
-      } catch (error) {
-        await player.inventory.addItem(item);
-        throw error;
-      }
-    }),
   balance: playerMemberProcedure.query(async ({ ctx: { user } }) => {
     return user.balance;
   }),
