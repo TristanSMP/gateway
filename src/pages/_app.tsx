@@ -16,6 +16,9 @@ const theme = createTheme({
   palette: {
     mode: "dark",
   },
+  typography: {
+    fontFamily: "inherit",
+  },
 });
 
 const MyApp: AppType<{ session: Session | null }> = ({
