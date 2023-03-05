@@ -66,7 +66,7 @@ const MarketItem: NextPage = () => {
         <Mui.Grid item xs={12} md={6}>
           <Mui.Badge
             badgeContent="Cheapest"
-            color="primary"
+            color="success"
             className="md:w-full"
           >
             <Mui.Card sx={{ width: "100%" }}>
@@ -77,7 +77,7 @@ const MarketItem: NextPage = () => {
                       ? itemQuery.data.amount
                       : undefined
                   }
-                  color="primary"
+                  color="secondary"
                   sx={{ mr: 4 }}
                 >
                   <Mui.Typography variant="h4" component="h1">
