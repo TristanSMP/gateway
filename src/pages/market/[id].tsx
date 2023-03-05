@@ -80,7 +80,7 @@ const MarketItem: NextPage = () => {
                   color="secondary"
                   sx={{ mr: 4 }}
                 >
-                  <Mui.Typography variant="h4" component="h1">
+                  <Mui.Typography variant="h3" component="h3">
                     {itemQuery.data.name}
                   </Mui.Typography>
                 </Mui.Badge>
@@ -93,7 +93,7 @@ const MarketItem: NextPage = () => {
                   </Mui.Card>
                 )}
 
-                <Mui.Typography variant="h5" component="h2">
+                <Mui.Typography variant="subtitle1" component="p">
                   {itemQuery.data.cheapest
                     ? `${itemQuery.data.cheapest.price} diamonds`
                     : "No sellers!"}
@@ -112,13 +112,7 @@ const MarketItem: NextPage = () => {
                   }}
                   disabled={!itemQuery.data.cheapest}
                 >
-                  {itemQuery.data.cheapest ? (
-                    <>
-                      Buy from cheapest seller ({itemQuery.data.cheapest.name})
-                    </>
-                  ) : (
-                    <>No sellers!</>
-                  )}
+                  {itemQuery.data.cheapest ? <>Buy</> : <>No sellers!</>}
                 </Mui.Button>
               </Mui.CardContent>
             </Mui.Card>
