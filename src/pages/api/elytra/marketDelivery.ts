@@ -30,6 +30,23 @@ export default async function handler(
     },
   });
 
+  const updated = await prisma.auctionedItem.updateMany({
+    where: {
+      buyer: {
+        minecraftUUID: data.uuid,
+      },
+      status: AuctionStatus.IN_TRANSIT,
+    },
+
+    data: {
+      status: AuctionStatus.SOLD,
+    },
+  });
+
+  if (updated.count !== itemsInTransit.length) {
+    return res.status(400).json({ error: "Mismatched items" });
+  }
+
   const itemb64s = itemsInTransit
     .filter((item) => item.type)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- filtered out nulls
