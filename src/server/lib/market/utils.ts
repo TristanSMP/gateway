@@ -36,6 +36,9 @@ async function getItemType(hashedItem: string) {
         include: {
           seller: true,
         },
+        where: {
+          status: AuctionStatus.ACTIVE,
+        },
       },
     },
   });
