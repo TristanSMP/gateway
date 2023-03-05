@@ -148,6 +148,8 @@ model ItemType {
   base64 String @db.Text
   b64key String @unique
 
+  metadata Json
+
   name String
 
   stock AuctionedItem[] // Items that are currently up for auction

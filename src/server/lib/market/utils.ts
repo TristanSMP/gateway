@@ -1,10 +1,27 @@
 import type { AuctionedItem, ItemType, User } from "@prisma/client";
 import { AuctionStatus } from "@prisma/client";
 import type { ItemStack } from "elytra";
+import type { z } from "zod";
 import { sha256 } from "../../../utils/hashing";
 import { prisma } from "../../db/client";
 import { BarrierTexture, ItemTextures } from "../textures";
+import { MarketItemMetadata } from "./schemas";
 import { MarketSerializer } from "./serialization";
+
+function createItemTypeMetadata(
+  item: ItemStack
+): z.infer<typeof MarketItemMetadata> {
+  return MarketItemMetadata.parse({
+    enchantments: Object.entries(item.enchantments).map(([id, level]) => ({
+      id,
+      level,
+    })),
+    name: item.name,
+    lore: [],
+    durability: item.durability,
+    amount: item.amount,
+  });
+}
 
 async function resolveItemType(item: ItemStack) {
   const hashedItem = sha256(item.base64);
@@ -18,6 +35,7 @@ async function resolveItemType(item: ItemStack) {
       b64key: hashedItem,
       name: item.name,
       namespacedId: item.id,
+      metadata: createItemTypeMetadata(item),
     },
     update: {},
     include: {
