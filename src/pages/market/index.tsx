@@ -84,16 +84,23 @@ const Market: NextPage = () => {
                     {discoveredItemTypesQuery.data.map((item, id) => (
                       <Mui.TableRow key={id}>
                         <Mui.TableCell component="th" scope="row">
-                          <Mui.Icon className="mr-2">
-                            {item.image ? (
-                              <img src={item.image} alt={item.name} />
-                            ) : (
-                              <QuestionMarkCircleIcon />
-                            )}
-                          </Mui.Icon>
+                          <Mui.Badge
+                            badgeContent={
+                              item.amount > 1 ? item.amount : undefined
+                            }
+                            color="primary"
+                            sx={{ mr: 4 }}
+                          >
+                            <Mui.Icon className="mr-2">
+                              {item.image ? (
+                                <img src={item.image} alt={item.name} />
+                              ) : (
+                                <QuestionMarkCircleIcon />
+                              )}
+                            </Mui.Icon>{" "}
+                          </Mui.Badge>
 
                           <Mui.Link href={`/market/${item.id}`}>
-                            {item.amount > 1 ? `${item.amount} x ` : ""}{" "}
                             {item.name}
                           </Mui.Link>
                         </Mui.TableCell>

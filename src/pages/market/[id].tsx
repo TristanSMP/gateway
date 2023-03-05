@@ -71,12 +71,19 @@ const MarketItem: NextPage = () => {
           >
             <Mui.Card sx={{ width: "100%" }}>
               <Mui.CardContent>
-                <Mui.Typography variant="h4" component="h1">
-                  {itemQuery.data.amount > 1
-                    ? `${itemQuery.data.amount} x `
-                    : ""}{" "}
-                  {itemQuery.data.name}
-                </Mui.Typography>
+                <Mui.Badge
+                  badgeContent={
+                    itemQuery.data.amount > 1
+                      ? itemQuery.data.amount
+                      : undefined
+                  }
+                  color="primary"
+                  sx={{ mr: 4 }}
+                >
+                  <Mui.Typography variant="h4" component="h1">
+                    {itemQuery.data.name}
+                  </Mui.Typography>
+                </Mui.Badge>
 
                 {itemQuery.data.enchantments.length > 0 && (
                   <Mui.Card elevation={2} sx={{ p: 2 }}>
