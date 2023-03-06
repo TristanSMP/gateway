@@ -4,8 +4,9 @@ import * as Mui from "@mui/material";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Diamond from "../../../public/assets/images/minecraft/diamond.png";
+import type { DiscoveredItemPayload } from "../../server/lib/market/serialization";
 import { trpc } from "../../utils/trpc";
 
 const Market: NextPage = () => {
@@ -24,7 +25,24 @@ const Market: NextPage = () => {
 
   const localUserQuery = trpc.auth.getLocalUser.useQuery();
 
-  const [tableExpanded, setTableExpanded] = useState(false);
+  const [filteredItems, setFilteredItems] = useState<DiscoveredItemPayload[]>(
+    []
+  );
+  const [showItemsWithoutStock, setShowItemsWithoutStock] = useState(false);
+
+  useEffect(() => {
+    if (discoveredItemTypesQuery.data) {
+      setFilteredItems(
+        discoveredItemTypesQuery.data.filter((item) => {
+          if (showItemsWithoutStock) {
+            return true;
+          }
+
+          return item.sellers.length > 0;
+        })
+      );
+    }
+  }, [discoveredItemTypesQuery.data, showItemsWithoutStock]);
 
   if (sessionStatus === "loading") {
     return <div>Loading...</div>;
@@ -160,68 +178,62 @@ const Market: NextPage = () => {
                     </Mui.TableRow>
                   </Mui.TableHead>
                   <Mui.TableBody>
-                    {discoveredItemTypesQuery.data.map((item, id) => (
-                      <>
-                        {tableExpanded ? (
-                          <>
-                            <Mui.TableRow key={id}>
-                              <Mui.TableCell component="th" scope="row">
-                                <Mui.Badge
-                                  badgeContent={
-                                    item.amount > 1 ? item.amount : undefined
-                                  }
-                                  color="primary"
-                                  sx={{ mr: 4 }}
-                                >
-                                  <Mui.Icon className="mr-2">
-                                    {item.image ? (
-                                      <img src={item.image} alt={item.name} />
-                                    ) : (
-                                      <QuestionMarkCircleIcon />
-                                    )}
-                                  </Mui.Icon>{" "}
-                                </Mui.Badge>
+                    {filteredItems.map((item, id) => (
+                      <Mui.TableRow key={id}>
+                        <Mui.TableCell component="th" scope="row">
+                          <Mui.Badge
+                            badgeContent={
+                              item.amount > 1 ? item.amount : undefined
+                            }
+                            color="primary"
+                            sx={{ mr: 4 }}
+                          >
+                            <Mui.Icon className="mr-2">
+                              {item.image ? (
+                                <img src={item.image} alt={item.name} />
+                              ) : (
+                                <QuestionMarkCircleIcon />
+                              )}
+                            </Mui.Icon>{" "}
+                          </Mui.Badge>
 
-                                <Mui.Link href={`/market/${item.id}`}>
-                                  {item.name}
-                                </Mui.Link>
-                              </Mui.TableCell>
+                          <Mui.Link href={`/market/${item.id}`}>
+                            {item.name}
+                          </Mui.Link>
+                        </Mui.TableCell>
 
-                              <Mui.TableCell align="right">
-                                {item.cheapest?.price ? (
-                                  <div className="flex flex-row items-center justify-end text-lg">
-                                    <div className="mx-0.5">
-                                      <Image
-                                        src={Diamond}
-                                        alt={"diamonds"}
-                                        className="h-[1.125rem] w-[1.125rem]"
-                                      />
-                                    </div>
-                                    {item.cheapest.price}
-                                  </div>
-                                ) : (
-                                  "N/A"
-                                )}
-                              </Mui.TableCell>
+                        <Mui.TableCell align="right">
+                          {item.cheapest?.price ? (
+                            <div className="flex flex-row items-center justify-end text-lg">
+                              <div className="mx-0.5">
+                                <Image
+                                  src={Diamond}
+                                  alt={"diamonds"}
+                                  className="h-[1.125rem] w-[1.125rem]"
+                                />
+                              </div>
+                              {item.cheapest.price}
+                            </div>
+                          ) : (
+                            "N/A"
+                          )}
+                        </Mui.TableCell>
 
-                              <Mui.TableCell align="right">
-                                {item.sellers.length}
-                              </Mui.TableCell>
-                            </Mui.TableRow>
-                          </>
-                        ) : (
-                          <></>
-                        )}
-                      </>
+                        <Mui.TableCell align="right">
+                          {item.sellers.length}
+                        </Mui.TableCell>
+                      </Mui.TableRow>
                     ))}
                     <Mui.TableRow>
                       <Mui.TableCell component="th" scope="row">
                         <Mui.Button
                           style={{ textTransform: "none" }}
-                          onClick={() => setTableExpanded(!tableExpanded)}
+                          onClick={() =>
+                            setShowItemsWithoutStock(!showItemsWithoutStock)
+                          }
                         >
-                          {tableExpanded ? "Hide" : "Show"} items with no
-                          sellers
+                          {showItemsWithoutStock ? "Hide" : "Show"} items with
+                          no stock
                         </Mui.Button>
                       </Mui.TableCell>
                       {/* Empty table cells so the underlines can render */}
