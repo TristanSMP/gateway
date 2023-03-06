@@ -3,6 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
+import { SingleDiamondB64 } from "../../../utils/Constants.js";
 
 export default async function handler(
   req: NextApiRequest,
@@ -51,6 +52,38 @@ export default async function handler(
     .filter((item) => item.type)
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- filtered out nulls
     .map((item) => item.type!.base64);
+
+  if (itemb64s.length === 0) {
+    const user = await prisma.user.findUnique({
+      where: {
+        minecraftUUID: data.uuid,
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "User not found" });
+    }
+
+    if (user.balance < 1) {
+      return res.status(400).json({ items: [] });
+    }
+
+    await prisma.user.update({
+      where: {
+        minecraftUUID: data.uuid,
+      },
+      data: {
+        balance: 0,
+      },
+    });
+
+    const diamonds = Array.from(
+      { length: user.balance },
+      () => SingleDiamondB64
+    );
+
+    return res.status(200).json({ items: diamonds });
+  }
 
   return res.status(200).json({ items: itemb64s });
 }
