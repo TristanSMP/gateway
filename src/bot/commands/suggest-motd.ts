@@ -49,7 +49,7 @@ const SuggestMOTD: Command = {
     await interaction.app.rest.post<RESTPostAPIChannelMessageJSONBody, unknown>(
       Routes.channelMessages(env.DISCORD_REVIEW_QUEUE_CHANNEL_ID),
       {
-        content: `<@&${env.DISCORD_REVIEW_ROLE_ID}>`,
+        content: `<@97470053615673344>`,
         embeds: [
           {
             title: "New MOTD",
