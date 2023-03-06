@@ -65,7 +65,7 @@ export default async function handler(
     }
 
     if (user.balance < 1) {
-      return res.status(400).json({ items: [] });
+      return res.status(200).json({ items: [] });
     }
 
     await prisma.user.update({
