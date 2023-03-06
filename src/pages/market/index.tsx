@@ -135,19 +135,7 @@ const Market: NextPage = () => {
                     </Mui.TableRow>
                   </Mui.TableHead>
                   <Mui.TableBody>
-                    {[
-                      ...discoveredItemTypesQuery.data,
-                      {
-                        amount: 1,
-                        cheapest: { id: "b", name: "name", price: 69 },
-                        enchantments: [],
-                        id: "a",
-                        image: "https://godder.xyz/logo.png",
-                        sellers: [],
-                        name: "Some item",
-                        type: "nothing",
-                      } satisfies DiscoveredItemPayload,
-                    ].map((item, id) => (
+                    {discoveredItemTypesQuery.data.map((item, id) => (
                       <>
                         {tableExpanded ? (
                           <>
