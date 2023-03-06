@@ -67,6 +67,8 @@ model User {
   Image                   Image[]
   AuctionedItem           AuctionedItem[]
   signShops               SignShop[]
+
+  supporterUntil DateTime? // If this isn't null, the user is a supporter until this date
 }
 
 model MinecraftAlternativeAccount {
