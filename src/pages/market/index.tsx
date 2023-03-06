@@ -2,7 +2,7 @@
 import { PlusIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import * as Mui from "@mui/material";
 import { type NextPage } from "next";
-import { useSession } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import Diamond from "../../../public/assets/images/minecraft/diamond.png";
@@ -11,6 +11,16 @@ import { trpc } from "../../utils/trpc";
 
 const Market: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
+
+  useEffect(() => {
+    if (sessionStatus === "loading") {
+      return;
+    }
+
+    if (!sessionData?.user) {
+      signIn("discord");
+    }
+  }, [sessionData, sessionStatus]);
 
   const balanceQuery = trpc.market.balance.useQuery(undefined, {
     refetchInterval: 1000,
