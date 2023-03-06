@@ -71,49 +71,56 @@ const MarketItem: NextPage = () => {
           >
             <Mui.Card sx={{ width: "100%" }}>
               <Mui.CardContent>
-                <Mui.Badge
-                  badgeContent={
-                    itemQuery.data.amount > 1
-                      ? itemQuery.data.amount
-                      : undefined
-                  }
-                  color="secondary"
-                  sx={{ mr: 4 }}
-                >
+                {itemQuery.data.cheapest ? (
+                  <>
+                    <Mui.Badge
+                      badgeContent={
+                        itemQuery.data.amount > 1
+                          ? itemQuery.data.amount
+                          : undefined
+                      }
+                      color="secondary"
+                      sx={{ mr: 4 }}
+                    >
+                      <Mui.Typography variant="h3" component="h3">
+                        {itemQuery.data.name}
+                      </Mui.Typography>
+                    </Mui.Badge>
+
+                    <Mui.Typography variant="caption" component="h5">
+                      {itemQuery.data.cheapest.name}
+                    </Mui.Typography>
+
+                    {itemQuery.data.enchantments.length > 0 && (
+                      <Mui.Card elevation={2} sx={{ p: 2 }}>
+                        {itemQuery.data.enchantments.map((enchantment) => (
+                          <Mui.Chip label={enchantment} key={enchantment} />
+                        ))}
+                      </Mui.Card>
+                    )}
+
+                    <Mui.Button
+                      variant="contained"
+                      color="primary"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (!itemQuery.data.cheapest)
+                          return showNotification({
+                            message: "No sellers!",
+                            color: "red",
+                          });
+                        buyItem(itemQuery.data.cheapest.id);
+                      }}
+                      disabled={!itemQuery.data.cheapest}
+                    >
+                      Buy for {itemQuery.data.cheapest.price} diamonds
+                    </Mui.Button>
+                  </>
+                ) : (
                   <Mui.Typography variant="h3" component="h3">
-                    {itemQuery.data.name}
+                    No sellers!
                   </Mui.Typography>
-                </Mui.Badge>
-
-                {itemQuery.data.enchantments.length > 0 && (
-                  <Mui.Card elevation={2} sx={{ p: 2 }}>
-                    {itemQuery.data.enchantments.map((enchantment) => (
-                      <Mui.Chip label={enchantment} key={enchantment} />
-                    ))}
-                  </Mui.Card>
                 )}
-
-                <Mui.Typography variant="subtitle1" component="p">
-                  {itemQuery.data.cheapest
-                    ? `${itemQuery.data.cheapest.price} diamonds`
-                    : "No sellers!"}
-                </Mui.Typography>
-                <Mui.Button
-                  variant="contained"
-                  color="primary"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    if (!itemQuery.data.cheapest)
-                      return showNotification({
-                        message: "No sellers!",
-                        color: "red",
-                      });
-                    buyItem(itemQuery.data.cheapest.id);
-                  }}
-                  disabled={!itemQuery.data.cheapest}
-                >
-                  {itemQuery.data.cheapest ? <>Buy</> : <>No sellers!</>}
-                </Mui.Button>
               </Mui.CardContent>
             </Mui.Card>
           </Mui.Badge>
