@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
-import { SingleDiamondB64 } from "../../../utils/Constants.js";
+import { SingleDiamondB64 } from "../../../utils/Constants";
 
 export default async function handler(
   req: NextApiRequest,
