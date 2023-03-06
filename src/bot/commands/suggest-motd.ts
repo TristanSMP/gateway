@@ -56,8 +56,9 @@ const SuggestMOTD: Command = {
             description: [
               `Submitted by ${interaction.user}`,
               "```",
-              `TS ${line1}`,
-              `MP ${line2 ?? ""}`,
+              "      - |-",
+              `        &d&l&oTS &6${line1}&r`,
+              `        &d&l&oMP &6${line2 ?? ""}`,
               "```",
             ].join("\n"),
             color: EmbedColor.Invisible,
