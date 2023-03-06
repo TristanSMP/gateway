@@ -1,5 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
-import { QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
+import { PlusIcon, QuestionMarkCircleIcon } from "@heroicons/react/24/outline";
 import * as Mui from "@mui/material";
 import { type NextPage } from "next";
 import { useSession } from "next-auth/react";
@@ -79,6 +79,17 @@ const Market: NextPage = () => {
                     />
                   </div>
                   {balanceQuery.data?.balance}
+                  <Mui.Tooltip
+                    title={
+                      <>
+                        Hold diamonds and run{" "}
+                        <pre className="inline">/deposit</pre> in game.
+                      </>
+                    }
+                    className="ml-2 inline h-6 w-6"
+                  >
+                    <PlusIcon className="text-info" />
+                  </Mui.Tooltip>
                 </div>
                 <div
                   className={`text-lg ${
@@ -90,6 +101,18 @@ const Market: NextPage = () => {
                 >
                   <span className="font-medium">Items in transit</span>:{" "}
                   {balanceQuery.data?.itemsInTransit}
+                  <Mui.Tooltip
+                    title={
+                      <>
+                        When you buy an item it becomes &quot;in transit&quot;
+                        until you run <pre className="inline">/deliver</pre> in
+                        game.
+                      </>
+                    }
+                    className="ml-2 inline h-6 w-6"
+                  >
+                    <QuestionMarkCircleIcon className="text-info" />
+                  </Mui.Tooltip>
                 </div>
               </div>
             </div>
