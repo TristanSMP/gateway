@@ -177,9 +177,22 @@ const Admin: NextPage = () => {
                       ))}
                     </Mui.TableCell>
                     <Mui.TableCell>
-                      {user.supporterUntil
-                        ? new Date(user.supporterUntil).toLocaleString()
-                        : "N/A"}
+                      {user.supporterUntil ? (
+                        <Mui.Tooltip
+                          title={new Date(user.supporterUntil).toLocaleString()}
+                        >
+                          <Mui.Typography>
+                            {Math.ceil(
+                              (new Date(user.supporterUntil).getTime() -
+                                new Date().getTime()) /
+                                (1000 * 3600 * 24)
+                            )}{" "}
+                            days
+                          </Mui.Typography>
+                        </Mui.Tooltip>
+                      ) : (
+                        "N/A"
+                      )}
                     </Mui.TableCell>
                     <Mui.TableCell>
                       <button onClick={() => handleRefreshUser(user)}>
