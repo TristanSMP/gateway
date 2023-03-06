@@ -1,6 +1,6 @@
 import { Bars3Icon } from "@heroicons/react/24/outline";
 import Link from "next/link";
-import { ProfileIcon } from "./ProfileIcon";
+import ProfileIcon from "./ProfileIcon";
 
 const links: { name: string; href: string; newTab: boolean }[] = [
   {
