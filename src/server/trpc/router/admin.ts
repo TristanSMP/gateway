@@ -13,6 +13,11 @@ export interface IAdminDashboardUser {
   id: string;
 
   /**
+   * Supporter until
+   */
+  supporterUntil: Date | null;
+
+  /**
    * TSMPU Name
    */
   name: string;
@@ -100,6 +105,7 @@ export const adminRouter = router({
             user.application?.status === ApplicationStatus.Approved
               ? true
               : false,
+          supporterUntil: user.supporterUntil,
         };
       })
     );
