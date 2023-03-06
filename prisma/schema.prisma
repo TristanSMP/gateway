@@ -66,6 +66,7 @@ model User {
   application             Application?
   Image                   Image[]
   AuctionedItem           AuctionedItem[]
+  signShops               SignShop[]
 }
 
 model MinecraftAlternativeAccount {
@@ -154,8 +155,24 @@ model ItemType {
 
   stock AuctionedItem[] // Items that are currently up for auction
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+  signShops SignShop[]
+}
+
+model SignShop {
+  id String @id @default(cuid())
+
+  location String @unique // (x,y,z,world) - Location of the sign
+
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String
+
+  item    ItemType? @relation(fields: [itemb64], references: [b64key])
+  itemb64 String?
+
+  @@index([ownerId])
+  @@index([itemb64])
 }
 
 enum ReviewStatus {
