@@ -103,7 +103,7 @@ const Market: NextPage = () => {
             </div>
           ) : (
             <>
-              {(balanceQuery.data?.balance || 0) > 0 && (
+              {(balanceQuery.data?.balance || 0) > 1 && (
                 <div className="mt-16 ml-8 flex items-center justify-center">
                   <div className="alert alert-success shadow-lg">
                     <div>
