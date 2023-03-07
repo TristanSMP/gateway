@@ -8,7 +8,7 @@ import {
 import type { ChatInputInteraction, Command } from "disploy";
 import { env } from "../../env/server.mjs";
 import { getTSMPUser } from "../../server/lib/utils";
-import { EmbedColor } from "../utils/embeds.js";
+import { EmbedColor } from "../utils/embeds";
 
 const SuggestMOTD: Command = {
   name: "suggest-motd",
