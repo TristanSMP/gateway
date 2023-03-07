@@ -76,6 +76,7 @@ const SuggestMOTD: Command = {
           color: EmbedColor.Invisible,
         },
       ],
+      flags: MessageFlags.Ephemeral,
     });
   },
 };
