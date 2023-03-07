@@ -2081,10 +2081,10 @@ electron-to-chromium@^1.4.251:
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.4.284.tgz#61046d1e4cab3a25238f6bf7413795270f125592"
   integrity sha512-M8WEXFuKXMYMVr45fo8mq0wUrrJHheiKZf6BArTKk9ZBYCKJEOU5H8cdWgDT+qCVZf7Na4lVUaZsA+h6uA9+PA==
 
-elytra@^1.5.2:
-  version "1.5.2"
-  resolved "https://registry.yarnpkg.com/elytra/-/elytra-1.5.2.tgz#83cb74dc200d60eeb03ca7834ce564c1c83c9b70"
-  integrity sha512-KLFb9etBQ1F9xht2mcyE94aQ7m+OuBcC/nVOjLiDH5ekRFeL5TNlpcBZ/ARnbnVlhs0R6UYQe7dEOguCH8BRoQ==
+elytra@^1.6.0:
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/elytra/-/elytra-1.6.0.tgz#29b388622dfa260b46cb1354ade04a285207b073"
+  integrity sha512-xymCToRu9S78BCIoCi08maEfniiAUBhaIunc4/CTCLFu98eDTt0gTTKm5O2LT21BiEeUs7DbUIlHvIrf7bhfOQ==
   dependencies:
     zod "^3.20.2"
 
