@@ -17,7 +17,7 @@ function createItemTypeMetadata(
       level,
     })),
     name: item.name,
-    lore: [],
+    lore: item.lore,
     durability: item.durability,
     amount: item.amount,
   });
