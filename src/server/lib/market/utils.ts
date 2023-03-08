@@ -5,8 +5,10 @@ import type { z } from "zod";
 import { sha256 } from "../../../utils/hashing";
 import { prisma } from "../../db/client";
 import { BarrierTexture, ItemTextures } from "../textures";
+import { UserError } from "../UserError";
 import { MarketItemMetadata } from "./schemas";
 import { MarketSerializer } from "./serialization";
+import { RefreshKnownSignShops } from "./signShops";
 
 function createItemTypeMetadata(
   item: ItemStack
@@ -65,7 +67,7 @@ async function getItemType(hashedItem: string) {
 async function listItem(item: ItemStack, price: number, seller: User) {
   const itemType = await resolveItemType(item);
 
-  await prisma.auctionedItem.create({
+  const auctionedItem = await prisma.auctionedItem.create({
     data: {
       price,
       status: AuctionStatus.ACTIVE,
@@ -81,6 +83,8 @@ async function listItem(item: ItemStack, price: number, seller: User) {
       },
     },
   });
+
+  await RefreshKnownSignShops(auctionedItem); // mark my words this will be a problem when sign shops are scaled immensely and the vercel serverless function times out
 }
 
 function findItemTexture(namespacedId: string): string {
@@ -122,19 +126,21 @@ async function buyItem(
   buyerUser: User
 ) {
   if (auctionedItem.status !== AuctionStatus.ACTIVE) {
-    throw new Error("Item is not for sale");
+    throw new UserError("Item is not for sale");
   }
 
   if (!auctionedItem.type) {
-    throw new Error("Item type not found");
+    throw new UserError("Item type not found");
   }
 
   if (auctionedItem.seller.id === buyerUser.id) {
-    throw new Error("You cannot buy your own item");
+    throw new UserError("You cannot buy your own item");
   }
 
   if (auctionedItem.price > buyerUser.balance) {
-    throw new Error("You cannot afford this item");
+    throw new UserError(
+      "You cannot afford this item. While holding diamonds, run `/deposit` to deposit them into your tsmp market balance."
+    );
   }
 
   /**
@@ -188,6 +194,8 @@ async function buyItem(
     console.error(`Failed to update item state: ${nonce}`, e);
     throw new Error(`Failed to update item state (nonce: ${nonce})`);
   }
+
+  await RefreshKnownSignShops(auctionedItem); // mark my words this will be a problem when sign shops are scaled immensely and the vercel serverless function times out
 }
 
 export const MarketUtils = {
