@@ -1,5 +1,8 @@
 import { TRPCError } from "@trpc/server";
+import { Routes } from "discord-api-types/v10";
 import { z } from "zod";
+import { DisployApp } from "../../../bot/main";
+import { env } from "../../../env/server.mjs";
 import { createApplicationChannel } from "../../lib/discord";
 import { generateLinkChallenge } from "../../lib/linking";
 import { UsernameToProfile } from "../../lib/minecraft";
@@ -179,14 +182,22 @@ export const onboardingRouter = router({
           },
         });
 
-        await createApplicationChannel(
-          application,
-          getDiscordUser(user.accounts).id,
-          {
-            whyJoin,
-            howLongWillYouPlay,
-          }
-        );
+        const discordAcct = getDiscordUser(user.accounts);
+
+        await DisployApp.rest
+          .get(Routes.guildMember(env.DISCORD_GUILD_ID, discordAcct.id))
+          .catch(() => {
+            throw new TRPCError({
+              code: "BAD_REQUEST",
+              message:
+                "Failed to get Discord member, make sure you're in the tsmp Discord server.",
+            });
+          });
+
+        await createApplicationChannel(application, discordAcct.id, {
+          whyJoin,
+          howLongWillYouPlay,
+        });
 
         return {
           applicationId: application.id,
