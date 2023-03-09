@@ -10,6 +10,7 @@ import type {
   NextPage,
 } from "next";
 
+import Link from "next/link";
 import type { NotionAPI } from "notion-client";
 import { NotionRenderer } from "react-notion-x";
 import { z } from "zod";
@@ -117,7 +118,10 @@ const BlogPost: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   while (notFound || !recordMap || !parsed) {
     return (
       <div className="flex h-screen flex-col items-center justify-center text-4xl text-white drop-shadow-2xl">
-        page no exist ok thx
+        <span>Hey this page doesn&apos;t exist!</span>
+        <Link href="/blog" className="btn-primary btn">
+          Find other blog posts
+        </Link>
       </div>
     );
   }
