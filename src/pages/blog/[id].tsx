@@ -13,8 +13,9 @@ import type {
 import type { NotionAPI } from "notion-client";
 import { NotionRenderer } from "react-notion-x";
 import { z } from "zod";
+import BlogPageInfo from "../../components/blog/BlogPageInfo";
 import { env } from "../../env/server.mjs";
-import { GetBlogPosts } from "../../server/lib/blog/utils";
+import { GetBlogPosts, ParseBlogPost } from "../../server/lib/blog/utils";
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
   const token = env.NOTION_TOKEN;
@@ -56,11 +57,26 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     };
   }
 
+  const parsed = ParseBlogPost(first);
+
+  if (!parsed) {
+    return {
+      props: {
+        notFound: true,
+      },
+      revalidate: 60,
+    };
+  }
+
   const recordMap = await notionX.getPage(first.id);
 
   return {
     props: {
       recordMap,
+      parsed: {
+        ...parsed,
+        createdAt: parsed.createdAt.toISOString(),
+      },
     },
     revalidate: 60 * 5, // 5 minutes
   };
@@ -85,9 +101,10 @@ export const getStaticPaths = async () => {
 
 const BlogPost: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   recordMap,
+  parsed,
   notFound,
 }) => {
-  while (notFound || !recordMap) {
+  while (notFound || !recordMap || !parsed) {
     return (
       <div className="flex h-screen flex-col items-center justify-center text-4xl text-white drop-shadow-2xl">
         page no exist ok thx
@@ -96,9 +113,16 @@ const BlogPost: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   }
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center">
+      <BlogPageInfo
+        post={{
+          ...parsed,
+          createdAt: new Date(parsed.createdAt),
+        }}
+      />
+
       <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={true} />
-    </>
+    </div>
   );
 };
 
