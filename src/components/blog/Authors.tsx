@@ -7,7 +7,7 @@ const Authors: React.FC<{
 }> = ({ authors }) => {
   return (
     <div className="flex flex-row items-center space-x-2">
-      <span className="text-gray-500">By</span>
+      <span className="text-gray-500">Written by</span>
       <div className="flex flex-row space-x-2">
         {authors.map((author) => (
           <Author author={author} key={author.name} />
