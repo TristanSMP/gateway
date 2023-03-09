@@ -31,6 +31,8 @@ export const serverSchema = z.object({
   DISCORD_REVIEW_QUEUE_CHANNEL_ID: z.string(),
   DISCORD_REVIEW_ROLE_ID: z.string(),
   ADMIN_API_TOKEN: z.string().optional(),
+  NOTION_TOKEN: z.string().optional(),
+  NOTION_DATABASE_ID: z.string().optional(),
 });
 
 /**
