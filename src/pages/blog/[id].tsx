@@ -39,10 +39,20 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   const response = await notion.databases.query({
     database_id: dbId,
     filter: {
-      property: "Slug",
-      rich_text: {
-        equals: z.string().parse(context.params?.id),
-      },
+      and: [
+        {
+          property: "Slug",
+          rich_text: {
+            equals: z.string().parse(context.params?.id),
+          },
+        },
+        {
+          property: "Published",
+          checkbox: {
+            equals: true,
+          },
+        },
+      ],
     },
   });
 
