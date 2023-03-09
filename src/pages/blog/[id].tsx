@@ -48,7 +48,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
           },
         },
         {
-          property: "Published",
+          property: "Public",
           checkbox: {
             equals: true,
           },
