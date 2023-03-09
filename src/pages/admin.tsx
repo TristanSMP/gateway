@@ -150,7 +150,7 @@ const Admin: NextPage = () => {
                   <Mui.TableCell>Discord</Mui.TableCell>
                   <Mui.TableCell>Minecraft</Mui.TableCell>
                   <Mui.TableCell>Alts</Mui.TableCell>
-                  <Mui.TableCell>Supporter Until</Mui.TableCell>
+                  <Mui.TableCell>Supporter Expires</Mui.TableCell>
                   <Mui.TableCell>Member</Mui.TableCell>
                 </Mui.TableRow>
               </Mui.TableHead>
