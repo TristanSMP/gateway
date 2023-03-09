@@ -92,6 +92,11 @@ export interface DiscoveredItemPayload extends PartialItemPayload {
    * The enchantments on the item
    */
   enchantments: string[];
+
+  /**
+   * The namespaced id of the item
+   */
+  namespacedId: string;
 }
 
 function serializeDiscoveredItem(
@@ -121,6 +126,7 @@ function serializeDiscoveredItem(
     ),
     image: MarketUtils.items.findItemTexture(item.namespacedId),
     type: item.id,
+    namespacedId: item.namespacedId,
     sellers: item.stock.map((stock) => ({
       price: stock.price,
       id: stock.id,
