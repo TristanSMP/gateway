@@ -69,6 +69,7 @@ model User {
   signShops               SignShop[]
 
   supporterUntil DateTime? // If this isn't null, the user is a supporter until this date
+  blogBooks      BlogBook[]
 }
 
 model MinecraftAlternativeAccount {
@@ -198,4 +199,20 @@ model Image {
   reviewer     String?
 
   @@index([creatorId])
+}
+
+model BlogBook {
+  id String @id @default(cuid())
+
+  title String
+
+  content String @db.Text
+
+  author   User   @relation(fields: [authorId], references: [id])
+  authorId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([authorId])
 }
