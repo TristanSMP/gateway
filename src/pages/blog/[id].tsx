@@ -89,7 +89,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
         createdAt: parsed.createdAt.toISOString(),
       },
     },
-    revalidate: 60 * 5, // 5 minutes
+    revalidate: 10,
   };
 };
 
