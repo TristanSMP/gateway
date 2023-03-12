@@ -1,4 +1,5 @@
 import type { NextPage } from "next";
+import { NextSeo } from "next-seo";
 import Image from "next/image";
 import Link from "next/link";
 import Features from "../components/Features";
@@ -7,6 +8,10 @@ import PlayersOnlineHero from "../components/PlayersOnlineHero";
 const Home: NextPage = () => {
   return (
     <>
+      <NextSeo
+        title="Tristan SMP"
+        description="Tristan SMP is a semi-vanilla Minecraft server hosted in Sydney that offers an immersive and unique experience to its players."
+      />
       <div className="flex min-h-screen flex-col bg-base-200">
         <div className="isolate">
           <>

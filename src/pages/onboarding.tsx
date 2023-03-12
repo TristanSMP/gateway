@@ -1,13 +1,14 @@
 /* eslint-disable @next/next/no-img-element */
 import type { NextPage } from "next";
 import { signIn, useSession } from "next-auth/react";
-import React, { useEffect, useState } from "react";
-import { trpc } from "../utils/trpc";
-import LinkMinecraftStage from "../components/onboarding/LinkMinecraftStage";
-import VerifyMinecraftStage from "../components/onboarding/VerifyMinecraftStage";
+import { NextSeo } from "next-seo";
+import { useEffect, useState } from "react";
 import ApplicationStage from "../components/onboarding/ApplicationStage";
+import LinkMinecraftStage from "../components/onboarding/LinkMinecraftStage";
 import Steps from "../components/onboarding/Steps";
 import Success from "../components/onboarding/Success";
+import VerifyMinecraftStage from "../components/onboarding/VerifyMinecraftStage";
+import { trpc } from "../utils/trpc";
 
 const OnBoarding: NextPage = () => {
   const { data: sessionData, status: sessionStatus } = useSession();
@@ -36,6 +37,10 @@ const OnBoarding: NextPage = () => {
 
   return (
     <main className="flex justify-center py-2 px-4 sm:px-6 lg:py-12 lg:px-8">
+      <NextSeo
+        title="TSMP: Onboarding"
+        description="Apply to join the Tristan SMP server!"
+      />
       <div className="flex flex-col items-start gap-6 lg:flex-row lg:gap-24">
         <Steps stages={status.data.stages} verifyStage={verifyStage} />
         {!status.data.stages.linkMinecraft && !verifyStage && (

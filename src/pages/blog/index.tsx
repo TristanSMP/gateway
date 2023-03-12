@@ -1,5 +1,6 @@
 import * as Mui from "@mui/material";
 import type { InferGetStaticPropsType, NextPage } from "next";
+import { NextSeo } from "next-seo";
 import BlogCard from "../../components/blog/BlogCard";
 import { GetBlogPosts } from "../../server/lib/blog/utils";
 
@@ -21,29 +22,32 @@ const BlogPosts: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   posts,
 }) => {
   return (
-    <Mui.Container>
-      <Mui.Grid container spacing={2}>
-        <Mui.Typography
-          variant="h1"
-          sx={{
-            mb: 4,
-          }}
-        >
-          Blog
-        </Mui.Typography>
+    <>
+      <NextSeo title="TSMP: Blog" description="The Tristan SMP blog!" />
+      <Mui.Container>
         <Mui.Grid container spacing={2}>
-          {posts.map((post) => (
-            <BlogCard
-              post={{
-                ...post,
-                createdAt: new Date(post.createdAt),
-              }}
-              key={post.id}
-            />
-          ))}
+          <Mui.Typography
+            variant="h1"
+            sx={{
+              mb: 4,
+            }}
+          >
+            Blog
+          </Mui.Typography>
+          <Mui.Grid container spacing={2}>
+            {posts.map((post) => (
+              <BlogCard
+                post={{
+                  ...post,
+                  createdAt: new Date(post.createdAt),
+                }}
+                key={post.id}
+              />
+            ))}
+          </Mui.Grid>
         </Mui.Grid>
-      </Mui.Grid>
-    </Mui.Container>
+      </Mui.Container>
+    </>
   );
 };
 

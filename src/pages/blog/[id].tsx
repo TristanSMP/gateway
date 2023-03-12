@@ -10,6 +10,7 @@ import type {
   NextPage,
 } from "next";
 
+import { NextSeo } from "next-seo";
 import Link from "next/link";
 import type { NotionAPI } from "notion-client";
 import { NotionRenderer } from "react-notion-x";
@@ -127,16 +128,34 @@ const BlogPost: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
   }
 
   return (
-    <div className="flex flex-col items-center justify-center">
-      <BlogPageInfo
-        post={{
-          ...parsed,
-          createdAt: new Date(parsed.createdAt),
+    <>
+      <NextSeo
+        title={parsed.title}
+        description={parsed.description}
+        openGraph={{
+          title: parsed.title,
+          description: parsed.description,
+          url: `https://tristansmp.com/blog/${parsed.slug}`,
+          article: {
+            publishedTime: parsed.createdAt,
+          },
         }}
       />
+      <div className="flex flex-col items-center justify-center">
+        <BlogPageInfo
+          post={{
+            ...parsed,
+            createdAt: new Date(parsed.createdAt),
+          }}
+        />
 
-      <NotionRenderer recordMap={recordMap} fullPage={false} darkMode={true} />
-    </div>
+        <NotionRenderer
+          recordMap={recordMap}
+          fullPage={false}
+          darkMode={true}
+        />
+      </div>
+    </>
   );
 };
 

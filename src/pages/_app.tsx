@@ -6,6 +6,7 @@ import { Analytics } from "@vercel/analytics/react";
 import "katex/dist/katex.min.css";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
+import { DefaultSeo } from "next-seo";
 import { type AppType } from "next/app";
 import { useRouter } from "next/router";
 import "prismjs/themes/prism-tomorrow.css";
@@ -44,24 +45,34 @@ const MyApp: AppType<{ session: Session | null }> = ({
   const wrapApp = !pathname.includes("/docs");
 
   return (
-    <SessionProvider session={session}>
-      <Analytics />
-      <MantineProvider
-        theme={{
-          colorScheme: "dark",
+    <>
+      <DefaultSeo
+        openGraph={{
+          type: "website",
+          locale: "en_IE",
+          url: "https://tristansmp.com",
+          siteName: "Tristan SMP",
         }}
-      >
-        <ThemeProvider theme={theme}>
-          <NotificationsProvider>
-            {wrapApp ? (
-              layoutWrapper(<Component {...pageProps} />)
-            ) : (
-              <Component {...pageProps} />
-            )}
-          </NotificationsProvider>
-        </ThemeProvider>
-      </MantineProvider>
-    </SessionProvider>
+      />
+      <SessionProvider session={session}>
+        <Analytics />
+        <MantineProvider
+          theme={{
+            colorScheme: "dark",
+          }}
+        >
+          <ThemeProvider theme={theme}>
+            <NotificationsProvider>
+              {wrapApp ? (
+                layoutWrapper(<Component {...pageProps} />)
+              ) : (
+                <Component {...pageProps} />
+              )}
+            </NotificationsProvider>
+          </ThemeProvider>
+        </MantineProvider>
+      </SessionProvider>
+    </>
   );
 };
 
