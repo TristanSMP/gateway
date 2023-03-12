@@ -20,7 +20,13 @@ const config = {
     defaultLocale: "en",
   },
   images: {
-    domains: ["cdn.discordapp.com", "cdn.tristancamejo.com"],
+    domains: [
+      "cdn.discordapp.com",
+      "cdn.tristancamejo.com",
+      "www.notion.so",
+      "notion.so",
+      "s3.us-west-2.amazonaws.com",
+    ],
   },
   redirects: async () => [
     {

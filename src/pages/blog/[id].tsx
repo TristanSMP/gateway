@@ -11,12 +11,14 @@ import type {
 } from "next";
 
 import { NextSeo } from "next-seo";
+import Image from "next/image";
 import Link from "next/link";
 import type { NotionAPI } from "notion-client";
 import { NotionRenderer } from "react-notion-x";
 import { z } from "zod";
 import BlogPageInfo from "../../components/blog/BlogPageInfo";
 import { env } from "../../env/server.mjs";
+import { getPreviewImageMap } from "../../server/lib/blog/previewImages";
 import { GetBlogPosts, ParseBlogPost } from "../../server/lib/blog/utils";
 
 export const getStaticProps = async (context: GetStaticPropsContext) => {
@@ -82,9 +84,16 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 
   const recordMap = await notionX.getPage(first.id);
 
+  const previewImageMap = await getPreviewImageMap(recordMap);
+
+  const recordMapWithPreviewImages = {
+    ...recordMap,
+    preview_images: previewImageMap,
+  };
+
   return {
     props: {
-      recordMap,
+      recordMap: recordMapWithPreviewImages,
       parsed: {
         ...parsed,
         createdAt: parsed.createdAt.toISOString(),
@@ -153,6 +162,12 @@ const BlogPost: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           recordMap={recordMap}
           fullPage={false}
           darkMode={true}
+          components={{
+            nextImage: Image,
+            nextLink: Link,
+          }}
+          previewImages={!!recordMap.preview_images}
+          showTableOfContents={true}
         />
       </div>
     </>

@@ -216,3 +216,10 @@ model BlogBook {
 
   @@index([authorId])
 }
+
+model CacheKV {
+  key   String @id
+  value String @db.Text
+
+  createdAt DateTime @default(now())
+}
