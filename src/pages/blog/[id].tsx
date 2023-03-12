@@ -68,7 +68,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     };
   }
 
-  const parsed = ParseBlogPost(first);
+  const parsed = await ParseBlogPost(first);
 
   if (!parsed) {
     return {

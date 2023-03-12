@@ -12,7 +12,7 @@ const BlogPageInfo: React.FC<{
           {new Date(post.createdAt).toLocaleDateString()}
         </p>
 
-        <Authors authors={post.authors} />
+        <Authors authors={post.authors} playerAuthors={post.players} />
       </div>
     </div>
   );
