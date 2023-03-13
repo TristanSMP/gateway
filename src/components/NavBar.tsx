@@ -4,8 +4,8 @@ import ProfileIcon from "./ProfileIcon";
 
 const links: { name: string; href: string; newTab: boolean }[] = [
   {
-    name: "Apply",
-    href: "/onboarding",
+    name: "Join",
+    href: "/blog/join",
     newTab: false,
   },
   {
