@@ -74,18 +74,16 @@ export async function createApplicationChannel(
     >(Routes.guildChannels(env.DISCORD_GUILD_ID), {
       name: `application-${application.id}`,
       parent_id: env.DISCORD_CATEGORY_ID,
-      permission_overwrites: [
-        {
-          id: discordId,
-          type: OverwriteType.Member,
-          allow: `${1 << 10}`, // VIEW_CHANNEL
-        },
-      ],
     })
   );
 
   if (channel.type !== ChannelType.GuildText)
     throw new Error("Channel is not a text channel");
+
+  await DisployApp.rest.put(Routes.channelPermission(channel.id, discordId), {
+    allow: `${1 << 10}`, // VIEW_CHANNEL
+    type: OverwriteType.Member,
+  });
 
   await channel.send({
     content: `<@&${env.DISCORD_REVIEW_ROLE_ID}> New application from <@${discordId}>.`,
