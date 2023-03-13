@@ -80,7 +80,7 @@ const MarketItem: NextPage<
   return (
     <>
       <NextSeo
-        title={`TSMP Market - ${item.name}`}
+        title={`${item.name} x ${item.amount}`}
         description={[
           item.cheapest
             ? `Cheapest seller: ${item.cheapest.name} for ${item.cheapest.price} diamonds`
