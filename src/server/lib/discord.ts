@@ -78,17 +78,7 @@ export async function createApplicationChannel(
         {
           id: discordId,
           type: OverwriteType.Member,
-          allow: `${1 << 10}`,
-        },
-        {
-          id: env.DISCORD_GUILD_ID,
-          type: OverwriteType.Role,
-          deny: `${1 << 10}`,
-        },
-        {
-          id: env.DISCORD_STAFF_ROLE_ID,
-          type: OverwriteType.Role,
-          allow: `${1 << 10}`,
+          allow: `${1 << 10}`, // VIEW_CHANNEL
         },
       ],
     })

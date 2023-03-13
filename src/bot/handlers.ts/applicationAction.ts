@@ -8,14 +8,19 @@ import { syncUser } from "../../server/lib/linking";
 import { getDiscordUser } from "../../server/lib/utils";
 import { createStatusEmbed } from "../utils/embeds";
 
+const allowedRoles = [
+  env.DISCORD_STAFF_ROLE_ID,
+  "1078068239956988004", // Community Manager
+];
+
 async function handle(
   interaction: ButtonInteraction,
   action: "accept" | "deny",
   applicationId: string
 ) {
-  if (!interaction.member?.roles.includes(env.DISCORD_STAFF_ROLE_ID)) {
+  if (!interaction.member?.roles.some((role) => allowedRoles.includes(role))) {
     return void interaction.reply({
-      content: "You are not a staff member.",
+      content: "You do not have permission to do this.",
       flags: MessageFlags.Ephemeral,
     });
   }
