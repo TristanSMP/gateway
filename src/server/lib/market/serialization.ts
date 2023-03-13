@@ -5,7 +5,6 @@ import {
   formatEnchantmentName,
 } from "./enchantmentLang";
 import { MarketItemMetadata } from "./schemas";
-import { MarketUtils } from "./utils";
 
 export interface PartialItemPayload {
   name: string;
@@ -25,7 +24,7 @@ function serializeItem(item: ItemStack, index: number): ItemPayload {
   return {
     name: item.name,
     amount: item.amount,
-    image: MarketUtils.items.findItemTexture(item.id),
+    image: `/api/i/${item.id}`,
     type: item.id,
     index: index,
   };
