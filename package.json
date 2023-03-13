@@ -46,6 +46,7 @@
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-notion-x": "^6.16.0",
+    "sharp": "^0.31.3",
     "skinview3d": "^3.0.0-alpha.1",
     "superjson": "1.9.1",
     "zod": "^3.18.0"
@@ -54,6 +55,7 @@
     "@types/node": "^18.0.0",
     "@types/react": "^18.0.14",
     "@types/react-dom": "^18.0.5",
+    "@types/sharp": "^0.31.1",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
     "autoprefixer": "^10.4.7",

@@ -127,7 +127,7 @@ function serializeDiscoveredItem(
         )}`
     ),
     lore: metadata.lore,
-    image: MarketUtils.items.findItemTexture(item.namespacedId),
+    image: `/api/i/${item.namespacedId}`,
     type: item.id,
     namespacedId: item.namespacedId,
     sellers: item.stock.map((stock) => ({

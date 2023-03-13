@@ -92,6 +92,16 @@ const MarketItem: NextPage<
         ]
           .filter((e) => e)
           .join(" | ")}
+        openGraph={{
+          images: [
+            {
+              url: `https://tristansmp.com${item.image}`,
+              width: 1024,
+              height: 1024,
+              alt: item.name,
+            },
+          ],
+        }}
       />
       <Mui.Container>
         <Mui.Grid container spacing={3}>
