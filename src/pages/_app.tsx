@@ -8,6 +8,7 @@ import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 import { DefaultSeo } from "next-seo";
 import { type AppType } from "next/app";
+import Head from "next/head";
 import { useRouter } from "next/router";
 import "prismjs/themes/prism-tomorrow.css";
 import "react-notion-x/src/styles.css";
@@ -52,8 +53,21 @@ const MyApp: AppType<{ session: Session | null }> = ({
           locale: "en_IE",
           url: "https://tristansmp.com",
           siteName: "Tristan SMP",
+          images: [
+            {
+              url: "https://tristansmp.com/assets/images/TLogo.png",
+              width: 256,
+              height: 256,
+              alt: "Tristan SMP",
+            },
+          ],
         }}
       />
+
+      <Head>
+        <link rel="icon" type="image/png" href="/assets/images/TLogo.png" />
+      </Head>
+
       <SessionProvider session={session}>
         <Analytics />
         <MantineProvider
