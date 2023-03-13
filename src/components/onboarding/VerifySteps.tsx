@@ -15,7 +15,7 @@ const VerifySteps: React.FC<{ code: string }> = ({ code }) => {
             <input
               type="text"
               placeholder="Loading…"
-              className="input-bordered input input-sm w-20 font-mono"
+              className="input-bordered input input-sm font-mono"
               value={code && `/link ${code}`}
             />
             <button
