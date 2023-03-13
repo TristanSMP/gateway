@@ -34,6 +34,11 @@ const config = {
       destination: "https://discord.gg/yzNjMhzw8s",
       permanent: true,
     },
+    {
+      source: "/join",
+      destination: "/blog/join",
+      permanent: true,
+    },
   ],
 };
 export default withNextra(config);
