@@ -6,6 +6,7 @@
     "build": "next build",
     "dev": "next dev",
     "postinstall": "prisma generate",
+    "postbuild": "next-sitemap --config next-sitemap.config.cjs",
     "lint": "next lint",
     "start": "next start"
   },
@@ -58,6 +59,7 @@
     "autoprefixer": "^10.4.7",
     "eslint": "^8.26.0",
     "eslint-config-next": "13.0.2",
+    "next-sitemap": "^4.0.5",
     "notion-client": "^6.16.0",
     "postcss": "^8.4.14",
     "prettier": "^2.7.1",
