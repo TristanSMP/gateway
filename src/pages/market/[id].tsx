@@ -62,6 +62,13 @@ const MarketItem: NextPage = () => {
               }}
             />
           </Mui.Card>
+          {itemQuery.data.lore.length > 0 && (
+            <Mui.Card elevation={2} sx={{ p: 2 }}>
+              {itemQuery.data.lore.map((lore) => (
+                <Mui.Chip label={lore} key={lore} />
+              ))}
+            </Mui.Card>
+          )}
         </Mui.Grid>
         <Mui.Grid item xs={12} md={6}>
           <Mui.Badge

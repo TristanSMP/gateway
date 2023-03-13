@@ -93,6 +93,8 @@ export interface DiscoveredItemPayload extends PartialItemPayload {
    */
   enchantments: string[];
 
+  lore: string[];
+
   /**
    * The namespaced id of the item
    */
@@ -124,6 +126,7 @@ function serializeDiscoveredItem(
           enchantment.level
         )}`
     ),
+    lore: metadata.lore,
     image: MarketUtils.items.findItemTexture(item.namespacedId),
     type: item.id,
     namespacedId: item.namespacedId,
