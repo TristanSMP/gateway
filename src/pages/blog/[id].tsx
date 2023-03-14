@@ -30,7 +30,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
       props: {
         notFound: true,
       },
-      revalidate: 60,
+      revalidate: 1,
     };
   }
 
@@ -67,7 +67,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
       props: {
         notFound: true,
       },
-      revalidate: 60,
+      revalidate: 1,
     };
   }
 
@@ -78,7 +78,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
       props: {
         notFound: true,
       },
-      revalidate: 60,
+      revalidate: 1,
     };
   }
 
@@ -99,7 +99,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
         createdAt: parsed.createdAt.toISOString(),
       },
     },
-    revalidate: 10,
+    revalidate: 1,
   };
 };
 
