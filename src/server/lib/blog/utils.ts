@@ -19,6 +19,11 @@ export interface IBlogPlayerAuthor {
   uuid: string;
 }
 
+export interface IBlogTag {
+  name: string;
+  color: string;
+}
+
 export interface IBlogPost {
   id: string;
   slug: string;
@@ -27,6 +32,8 @@ export interface IBlogPost {
   createdAt: Date;
   authors: IBlogAuthor[];
   players: IBlogPlayerAuthor[];
+  coverImage: string | null;
+  tags: IBlogTag[];
 }
 
 export async function ParseBlogPost(
@@ -47,7 +54,16 @@ export async function ParseBlogPost(
     name: author.name,
     avatar: author?.avatar_url || null,
   }));
-
+  // @ts-ignore
+  const coverImage =
+    page.cover?.type === "external"
+      ? page.cover.external.url
+      : page.cover?.file.url || null;
+  // @ts-ignore
+  const tags = page.properties.Tags.multi_select.map((tag) => ({
+    name: tag.name,
+    color: tag.color,
+  }));
   const players: IBlogPlayerAuthor[] = [];
 
   if ("Players" in page.properties) {
@@ -81,6 +97,8 @@ export async function ParseBlogPost(
     createdAt: new Date(createdAt),
     authors,
     players,
+    coverImage,
+    tags,
   };
 }
 
