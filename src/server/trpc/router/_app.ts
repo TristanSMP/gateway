@@ -1,6 +1,7 @@
 import { router } from "../trpc";
 import { adminRouter } from "./admin";
 import { authRouter } from "./auth";
+import { blogRouter } from "./blog";
 import { discordRouter } from "./discord";
 import { marketRouter } from "./market";
 import { metaRouter } from "./meta";
@@ -13,6 +14,7 @@ export const appRouter = router({
   discord: discordRouter,
   admin: adminRouter,
   meta: metaRouter,
+  blog: blogRouter,
 });
 
 export type AppRouter = typeof appRouter;

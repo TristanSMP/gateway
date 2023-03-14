@@ -1,25 +1,69 @@
 import type { InferGetStaticPropsType, NextPage } from "next";
 import { NextSeo } from "next-seo";
-import BlogCard from "../../components/blog/BlogCard";
+import { useRouter } from "next/router";
+import { useEffect, useState } from "react";
+import BlogCards from "../../components/blog/BlogCards";
+import type { IBlogPost } from "../../server/lib/blog/utils";
 import { GetBlogPosts } from "../../server/lib/blog/utils";
+import { trpc } from "../../utils/trpc";
 
 export const getStaticProps = async () => {
   const posts = await GetBlogPosts();
 
   return {
     props: {
-      posts: posts.map((post) => ({
+      initialPosts: posts.posts.map((post) => ({
         ...post,
         createdAt: post.createdAt.toISOString(),
       })),
+      nextCursor: posts.nextCursor,
     },
     revalidate: 10,
   };
 };
 
 const BlogPosts: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
-  posts,
+  initialPosts,
+  nextCursor,
 }) => {
+  const [posts, setPosts] = useState<IBlogPost[]>(
+    initialPosts.map((post) => ({
+      ...post,
+      createdAt: new Date(post.createdAt),
+    }))
+  );
+
+  const router = useRouter();
+
+  const loadMorePostsQuery = trpc.blog.loadMorePosts.useQuery(
+    {
+      cursor: nextCursor ?? undefined,
+      limit: 5,
+      tag: router.query.tag as string,
+    },
+    {
+      enabled: false,
+    }
+  );
+
+  useEffect(() => {
+    const tag = router.query.tag as string;
+
+    if (tag) {
+      loadMorePostsQuery.refetch();
+
+      if (loadMorePostsQuery.data) {
+        setPosts(loadMorePostsQuery.data.posts);
+      }
+    } else {
+      if (loadMorePostsQuery.data) {
+        setPosts((prevPosts) => {
+          return [...prevPosts, ...loadMorePostsQuery.data.posts];
+        });
+      }
+    }
+  }, [loadMorePostsQuery, router.query.tag]);
+
   return (
     <>
       <NextSeo title="TSMP: Blog" description="The Tristan SMP blog!" />
@@ -32,19 +76,34 @@ const BlogPosts: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
             The latest news and updates from Tristan SMP!
           </p>
         </div>
-        <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-y-16 gap-x-8 border-t border-opacity-30 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-2">
-            {posts.map((post) => (
-              <BlogCard
-                post={{
-                  ...post,
-                  createdAt: new Date(post.createdAt),
-                }}
-                key={post.id}
-              />
-            ))}
+
+        {router.query.tag && (
+          <div className="mt-10 flex justify-center">
+            <button
+              onClick={() => {
+                router.push("/blog");
+              }}
+              className="hover:bg-primary-dark focus:ring-primary-dark inline-flex items-center rounded-md border border-transparent bg-primary px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              Clear Tag Filter ({router.query.tag})
+            </button>
           </div>
-        </div>
+        )}
+
+        <BlogCards posts={posts} />
+
+        {nextCursor && (
+          <div className="mt-10 flex justify-center">
+            <button
+              onClick={() => {
+                loadMorePostsQuery.refetch();
+              }}
+              className="hover:bg-primary-dark focus:ring-primary-dark inline-flex items-center rounded-md border border-transparent bg-primary px-4 py-2 text-base font-medium text-white shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2"
+            >
+              {loadMorePostsQuery.isLoading ? "Loading..." : "Load More"}
+            </button>
+          </div>
+        )}
       </div>
     </>
   );

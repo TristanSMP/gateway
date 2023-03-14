@@ -102,7 +102,19 @@ export async function ParseBlogPost(
   };
 }
 
-export async function GetBlogPosts(): Promise<IBlogPost[]> {
+export async function GetBlogPosts(
+  {
+    tag,
+    limit,
+    startCursor,
+  }: { tag?: string; limit?: number; startCursor?: string } = {
+    limit: 10,
+    startCursor: undefined,
+  }
+): Promise<{
+  posts: IBlogPost[];
+  nextCursor: string | null;
+}> {
   const token = env.NOTION_TOKEN;
   const dbId = env.NOTION_DATABASE_ID;
 
@@ -116,6 +128,8 @@ export async function GetBlogPosts(): Promise<IBlogPost[]> {
 
   const response = await notion.databases.query({
     database_id: dbId,
+    page_size: limit,
+    start_cursor: startCursor,
     filter: {
       and: [
         {
@@ -148,6 +162,16 @@ export async function GetBlogPosts(): Promise<IBlogPost[]> {
             equals: true,
           },
         },
+        ...(tag
+          ? [
+              {
+                property: "Tags",
+                multi_select: {
+                  contains: tag,
+                },
+              },
+            ]
+          : []),
       ],
     },
   });
@@ -162,5 +186,8 @@ export async function GetBlogPosts(): Promise<IBlogPost[]> {
       .filter((post) => post !== null)
   )) as IBlogPost[];
 
-  return posts;
+  return {
+    posts,
+    nextCursor: response.next_cursor || null,
+  };
 }
