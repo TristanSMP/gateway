@@ -14,7 +14,7 @@ export const getStaticProps = async () => {
         createdAt: post.createdAt.toISOString(),
       })),
     },
-    revalidate: 60,
+    revalidate: 10,
   };
 };
 
