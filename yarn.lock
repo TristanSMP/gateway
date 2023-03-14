@@ -4833,15 +4833,6 @@ notion-client@^6.16.0:
     notion-utils "^6.16.0"
     p-map "^5.3.0"
 
-notion-compat@^6.16.0:
-  version "6.16.0"
-  resolved "https://registry.yarnpkg.com/notion-compat/-/notion-compat-6.16.0.tgz#179b8cf978ce84338ff2af49318cb1c4da204373"
-  integrity sha512-Ue67pAC6s3GwvzL7gtfFPUA0kT9FI/WKP8aRCfRuJ/SDedPSuXREI19qSr9wpRDhxMKtOZlT2X6Hxoc9FFFupg==
-  dependencies:
-    notion-types "^6.16.0"
-    notion-utils "^6.16.0"
-    p-queue "^7.2.0"
-
 notion-types@^6.16.0:
   version "6.16.0"
   resolved "https://registry.yarnpkg.com/notion-types/-/notion-types-6.16.0.tgz#1c676b180095d14209a6760dd8586db55a115e91"

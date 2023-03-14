@@ -33,6 +33,8 @@ export const serverSchema = z.object({
   ADMIN_API_TOKEN: z.string().optional(),
   NOTION_TOKEN: z.string().optional(),
   NOTION_DATABASE_ID: z.string().optional(),
+  NOTION_ACTIVE_USER: z.string().optional(),
+  NOTION_TOKEN_V2: z.string().optional(),
 });
 
 /**
