@@ -17,7 +17,7 @@ const BlogCard: React.FC<{
           alt={post.title}
           width={800}
           height={400}
-          className="h-full rounded-3xl"
+          className="aspect-video h-full rounded-3xl"
           style={{ objectFit: "cover" }}
         />
       </Link>
