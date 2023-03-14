@@ -9,7 +9,14 @@ const MinecraftProfileSchema = z
 
 export type MinecraftProfile = z.infer<typeof MinecraftProfileSchema>;
 
+const UUIDToProfileCache = new Map<string, MinecraftProfile>();
+
 export async function UUIDToProfile(uuid: string): Promise<MinecraftProfile> {
+  if (UUIDToProfileCache.has(uuid)) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return UUIDToProfileCache.get(uuid)!;
+  }
+
   const res = await fetch(
     `https://sessionserver.mojang.com/session/minecraft/profile/${uuid.replace(
       /-/g,
@@ -19,20 +26,35 @@ export async function UUIDToProfile(uuid: string): Promise<MinecraftProfile> {
 
   const data = await res.json();
 
-  return MinecraftProfileSchema.parse(data);
+  const parsed = MinecraftProfileSchema.parse(data);
+
+  UUIDToProfileCache.set(uuid, parsed);
+
+  return parsed;
 }
+
+const UsernameToProfileCache = new Map<string, MinecraftProfile>();
 
 export async function UsernameToProfile(
   username: string
 ): Promise<MinecraftProfile | null> {
   try {
+    if (UsernameToProfileCache.has(username)) {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return UsernameToProfileCache.get(username)!;
+    }
+
     const res = await fetch(
       `https://api.mojang.com/users/profiles/minecraft/${username}`
     );
 
     const data = await res.json();
 
-    return MinecraftProfileSchema.parse(data);
+    const parsed = MinecraftProfileSchema.parse(data);
+
+    UsernameToProfileCache.set(username, parsed);
+
+    return parsed;
   } catch (e) {
     return null;
   }
