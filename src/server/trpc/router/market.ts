@@ -9,6 +9,11 @@ import {
   router,
 } from "../trpc";
 
+export interface IPlayerBalance {
+  balance: number;
+  itemsInTransit: number;
+}
+
 export const marketRouter = router({
   discoveredItemTypes: playerMemberProcedure.query(async ({}) => {
     const discoveredItems = await MarketUtils.items.getDiscoveredItemTypes();
@@ -48,7 +53,7 @@ export const marketRouter = router({
       },
     });
 
-    return { balance: user.balance, itemsInTransit };
+    return { balance: user.balance, itemsInTransit } satisfies IPlayerBalance;
   }),
   buyItem: playerMemberProcedure
     .input(

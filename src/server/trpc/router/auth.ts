@@ -1,6 +1,7 @@
 import { z } from "zod";
-import { playerMemberProcedure, publicProcedure, router } from "../trpc";
+import type { TSMPUser } from "../../../types/users";
 import { UUIDToProfile } from "../../lib/minecraft";
+import { playerMemberProcedure, publicProcedure, router } from "../trpc";
 
 export interface ITSMPUser {
   minecraftUUID: string | null;
@@ -18,16 +19,7 @@ export interface ITSMPLocalUser extends ITSMPUser {
 
 export const authRouter = router({
   getLocalUser: playerMemberProcedure.query(async ({ ctx: { user } }) => {
-    const localUser: ITSMPLocalUser = {
-      minecraftUUID: user.minecraftUUID,
-      minecraftName: (await UUIDToProfile(user.minecraftUUID)).name,
-      id: user.id,
-      name: user.name,
-      image: user.image,
-      balance: user.balance,
-      isBotAdmin: user.isBotAdmin,
-      canAccessAdminDashboard: user.canAccessAdminDashboard,
-    };
+    const localUser = await createLocalUserModel(user);
 
     return localUser;
   }),
@@ -61,3 +53,20 @@ export const authRouter = router({
       return users;
     }),
 });
+
+export async function createLocalUserModel(
+  user: TSMPUser
+): Promise<ITSMPLocalUser> {
+  return {
+    minecraftUUID: user.minecraftUUID,
+    minecraftName: user.minecraftUUID
+      ? (await UUIDToProfile(user.minecraftUUID)).name
+      : null,
+    id: user.id,
+    name: user.name,
+    image: user.image,
+    balance: user.balance,
+    isBotAdmin: user.isBotAdmin,
+    canAccessAdminDashboard: user.canAccessAdminDashboard,
+  };
+}
