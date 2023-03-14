@@ -24,8 +24,16 @@ const BlogPosts: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
     <>
       <NextSeo title="TSMP: Blog" description="The Tristan SMP blog!" />
       <div className="py-24 sm:py-32">
+        <div className="text-center">
+          <h1 className="text-5xl font-extrabold tracking-tight text-primary">
+            Blog
+          </h1>
+          <p className="mx-auto mt-3 max-w-2xl text-xl text-secondary sm:mt-4">
+            The latest news and updates from Tristan SMP!
+          </p>
+        </div>
         <div className="mx-auto max-w-7xl px-6 lg:px-8">
-          <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-y-16 gap-x-8 border-t border-opacity-30 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-3">
+          <div className="mx-auto mt-10 grid max-w-2xl grid-cols-1 gap-y-16 gap-x-8 border-t border-opacity-30 pt-10 sm:mt-16 sm:pt-16 lg:mx-0 lg:max-w-none lg:grid-cols-2">
             {posts.map((post) => (
               <BlogCard
                 post={{
