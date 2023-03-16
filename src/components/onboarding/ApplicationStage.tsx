@@ -60,6 +60,7 @@ const ApplicationStage: React.FC<{
                   value={whyJoin}
                   onChange={(e) => setWhyJoin(e.target.value)}
                   ref={whyJoinRef}
+                  placeholder="Also include how you could potentially contribute to the server, such as building at spawn."
                 />
               </div>
             </div>
