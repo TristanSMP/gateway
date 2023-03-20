@@ -28,7 +28,7 @@ const Home: NextPage = () => {
                 Bedrock hosted in Sydney that offers an immersive and unique
                 experience to its players.
               </p>
-              <Link href="/onboarding" className="btn-primary btn">
+              <Link href="/blog/join" className="btn-primary btn">
                 Get Started
               </Link>
             </div>
@@ -89,7 +89,7 @@ const Home: NextPage = () => {
                   below.
                 </p>
                 <div className="mt-10 flex items-center justify-center gap-x-6 lg:justify-start">
-                  <Link href="/onboarding" className="btn-primary btn">
+                  <Link href="/blog/join" className="btn-primary btn">
                     Get started
                   </Link>
                 </div>
