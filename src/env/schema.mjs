@@ -35,6 +35,7 @@ export const serverSchema = z.object({
   NOTION_DATABASE_ID: z.string().optional(),
   NOTION_ACTIVE_USER: z.string().optional(),
   NOTION_TOKEN_V2: z.string().optional(),
+  CHAT_LINK_WEBHOOK: z.string().optional(),
 });
 
 /**
