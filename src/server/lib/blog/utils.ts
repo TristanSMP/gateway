@@ -42,6 +42,10 @@ export async function ParseBlogPost(
   if (!isFullPage(page)) return null;
 
   // @ts-ignore
+  const isPublic = page.properties.Public.checkbox;
+  if (!(isPublic as boolean)) return null;
+
+  // @ts-ignore
   const slug = page.properties.Slug.rich_text[0].plain_text;
   // @ts-ignore
   const title = page.properties.Name.title[0].plain_text;

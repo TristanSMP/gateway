@@ -39,9 +39,32 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     authToken: env.NOTION_TOKEN_V2,
   });
 
-  const timings = new Map<string, number>();
+  const slug = z.string().parse(context.params?.id);
 
-  timings.set("start-query", Date.now());
+  if (slug.startsWith("dpid-")) {
+    const pageId = slug.replace("dpid-", "");
+    const page = await notion.pages.retrieve({ page_id: pageId });
+    const parsed = await ParseBlogPost(page);
+
+    if (!parsed) {
+      return {
+        props: {
+          error: {
+            message: `"${context.params?.id}" does not seem to exist.`,
+            statusCode: 404,
+          },
+        },
+      };
+    }
+
+    return {
+      redirect: {
+        destination: `/blog/${parsed.slug}`,
+        permanent: false,
+      },
+      revalidate: 10,
+    };
+  }
 
   const response = await notion.databases.query({
     database_id: dbId,
@@ -63,8 +86,6 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     },
   });
 
-  timings.set("end-query", Date.now());
-
   const first = response.results[0];
 
   if (!first) {
@@ -78,11 +99,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     };
   }
 
-  timings.set("start-parse", Date.now());
-
   const parsed = await ParseBlogPost(first);
-
-  timings.set("end-parse", Date.now());
 
   if (!parsed) {
     return {
@@ -95,34 +112,14 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     };
   }
 
-  timings.set("start-render", Date.now());
-
   const recordMap = await notionX.getPage(first.id);
 
-  timings.set("end-render", Date.now());
-
-  timings.set("start-preview-images", Date.now());
-
   const previewImageMap = await getPreviewImageMap(recordMap);
-
-  timings.set("end-preview-images", Date.now());
 
   const recordMapWithPreviewImages = {
     ...recordMap,
     preview_images: previewImageMap,
   };
-
-  //console table of all the calculated timings
-  console.table(
-    Object.fromEntries(
-      Array.from(timings.entries())
-        .filter(([key]) => key.startsWith("end-"))
-        .map(([key, value]) => [
-          key.replace("end-", ""),
-          value - timings.get(key.replace("end-", "start-"))!,
-        ])
-    )
-  );
 
   return {
     props: {
@@ -204,6 +201,7 @@ const BlogPost: NextPage<InferGetStaticPropsType<typeof getStaticProps>> = ({
           }}
           previewImages={!!recordMap.preview_images}
           showTableOfContents={true}
+          mapPageUrl={(pageId) => `/blog/dpid-${pageId}`}
         />
       </div>
     </>
