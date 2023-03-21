@@ -1,6 +1,7 @@
 import FormData from "form-data";
 import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
+import { EmbedColor } from "../../../bot/utils/embeds";
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
 import { ConsumeOTT } from "../../../server/lib/ott";
@@ -58,11 +59,19 @@ export default async function handler(
     "payload_json",
     JSON.stringify({
       username: "TSMP Companion",
-      content: `From <@${discord.id}> via [TSMP Companion](https://tristansmp.com/companion)`,
       attachments: [
         {
           id: 0,
           filename: "screenshot.png",
+        },
+      ],
+      embeds: [
+        {
+          description: `From <@${discord.id}> via [TSMP Companion](https://tristansmp.com/companion)`,
+          color: EmbedColor.Invisible,
+          image: {
+            url: "attachment://screenshot.png",
+          },
         },
       ],
     })
