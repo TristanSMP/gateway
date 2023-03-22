@@ -204,7 +204,7 @@ const Market: NextPage = () => {
                       <Mui.TableCell align="right">
                         Cheapest Price
                       </Mui.TableCell>
-                      <Mui.TableCell align="right">Sellers</Mui.TableCell>
+                      <Mui.TableCell align="right">Quantity</Mui.TableCell>
                     </Mui.TableRow>
                   </Mui.TableHead>
                   <Mui.TableBody>
