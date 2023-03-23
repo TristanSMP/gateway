@@ -58,7 +58,7 @@ const StatsViewer: NextPage<
         <meta content={`${username}, TSMP Stats`} property="og:title" />
         <meta
           content={`TSMP Stats for ${username}. Their Power Level is ${
-            mcmmoData?.powerLevel ?? 0
+            mcmmoData?.["Power Level"] ?? 0
           }`}
           property="og:description"
         />
