@@ -58,6 +58,8 @@ const StatsViewer: NextPage<
         <meta content={`${username}, TSMP Stats`} property="og:title" />
         <meta
           content={`TSMP Stats for ${username}. Their Power Level is ${
+          {/* TODO: type is wrong in translateSkillNames() output */}
+          {/* @ts-expect-error type is wrong */}
             mcmmoData["Power Level"] ?? 0
           }`}
           property="og:description"
