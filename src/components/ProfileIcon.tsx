@@ -30,6 +30,9 @@ const ProfileIcon = () => {
           </li>
         )}
         <li>
+          <Link href="/onboarding">My application</Link>
+        </li>
+        <li>
           <a onClick={() => signOut()}>Logout</a>
         </li>
       </ul>
