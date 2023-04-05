@@ -5,9 +5,9 @@ export default {
   logo: <span>tsmp</span>,
   logoLink: "/",
   project: {
-    link: "https://github.com/tristansmp/web",
+    link: "https://github.com/tristansmp/gateway",
   },
-  docsRepositoryBase: "https://github.com/tristansmp/web/blob",
+  docsRepositoryBase: "https://github.com/tristansmp/gateway/blob",
   footer: {
     text: <span>TristanSMP by Tristan, for the community.</span>,
   },
