@@ -39,6 +39,11 @@ const config = {
       destination: "/blog/join",
       permanent: true,
     },
+    {
+      source: "/supporter",
+      destination: "/docs/supporter",
+      permanent: true,
+    },
   ],
 };
 export default withNextra(config);
