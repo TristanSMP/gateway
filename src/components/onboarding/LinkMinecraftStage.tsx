@@ -8,20 +8,11 @@ const LinkMinecraftStage: React.FC<{
   setUsername: (username: string) => void;
   next: () => void;
 }> = ({ setUsername, username, next }) => {
-  const [bedrock, setBedrock] = useState(false);
   const [inputUsername, setInputUsername] = useState(username);
 
   const profile = trpc.onboarding.findPlayer.useQuery({
-    mcUsername: bedrock ? `.${inputUsername}` : inputUsername,
+    mcUsername: inputUsername,
   });
-
-  useEffect(() => {
-    if (inputUsername.startsWith(".")) {
-      setBedrock(true);
-    } else {
-      setBedrock(false);
-    }
-  }, [inputUsername]);
 
   return (
     <div>
@@ -35,7 +26,7 @@ const LinkMinecraftStage: React.FC<{
           </p>
 
           <div>
-            <div className="input-group py-5">
+            <div className="pt-2">
               <input
                 type="text"
                 placeholder="Minecraft username"
@@ -43,24 +34,17 @@ const LinkMinecraftStage: React.FC<{
                 onChange={(e) => setInputUsername(e.target.value)}
                 className="input-bordered input mt-5 -ml-0.5"
               />
-
-              <button
-                onClick={() => {
-                  setBedrock(!bedrock);
-                }}
-                className="btn btn-secondary mt-5 -ml-0.5 w-1/3 max-w-fit"
-              >
-                {bedrock ? "Bedrock" : "Java"}
-              </button>
             </div>
 
-            <br />
+            <div className="mt-2 mb-5 text-xs opacity-60">
+              Only Java Edition accounts are supported.
+            </div>
 
             <button
               onClick={() => {
-                setUsername(bedrock ? `.${inputUsername}` : inputUsername);
+                setUsername(inputUsername);
               }}
-              className={`btn btn-primary ${
+              className={`btn-primary btn ${
                 profile.isLoading && username !== "" ? "loading" : ""
               }`}
               disabled={
@@ -112,7 +96,7 @@ const LinkMinecraftStage: React.FC<{
             continue.
           </p>
           <button
-            className="btn btn-primary mt-3"
+            className="btn-primary btn mt-3"
             onClick={
               profile.data.online
                 ? next
