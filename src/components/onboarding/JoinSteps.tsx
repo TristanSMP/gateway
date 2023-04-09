@@ -31,8 +31,7 @@ const JoinSteps: React.FC = () => {
         </div>
       </Instruction>
       <Instruction step="3">
-        Enter <strong>tristansmp.com</strong> (Java) or{" "}
-        <strong>mc.tristansmp.com</strong> (Bedrock) into Server Address
+        Enter <strong>tristansmp.com</strong> (Java) into Server Address
         <div className="mt-1 max-w-[24rem]">
           <Image
             src={imgMinecraftServerAddress}

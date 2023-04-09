@@ -24,9 +24,9 @@ const Home: NextPage = () => {
                 .
               </h1>
               <p className="my-5 py-6 text-lg">
-                Tristan SMP is a semi-vanilla Minecraft server for both Java and
-                Bedrock hosted in Sydney that offers an immersive and unique
-                experience to its players.
+                Tristan SMP is a semi-vanilla Minecraft server for Java hosted
+                in Sydney that offers an immersive and unique experience to its
+                players.
               </p>
               <Link href="/blog/join" className="btn-primary btn">
                 Get Started
