@@ -7,10 +7,12 @@ import { getDiscordUser } from "./utils";
 
 export async function userIsSupporter(user: User): Promise<boolean> {
   if (!user.supporterUntil) return false;
-  if (user.supporterUntil < new Date()) {
+
+  if (user.supporterUntil.getTime() < new Date().getTime()) {
     await manageSupporter(user, null);
     return false;
   }
+
   return true;
 }
 
