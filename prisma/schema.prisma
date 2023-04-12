@@ -238,3 +238,12 @@ model OneTimeToken {
 
   @@index([userId])
 }
+
+model SpawnLocation {
+  id String @id @default(cuid())
+
+  location String @unique // `x,y,z,world`
+
+  name        String
+  b64ItemIcon String @db.Text
+}
