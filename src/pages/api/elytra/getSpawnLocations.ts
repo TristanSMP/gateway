@@ -10,18 +10,15 @@ export default async function handler(
     return res.status(401).json({ error: "Unauthorized" });
   }
 
-
   const spawns = await prisma.spawnLocation.findMany();
-
-
 
   return res.status(200).json({
     spawns: spawns.map((spawn) => {
-        return {
-            seriLoc: spawn.location,
-            name: spawn.name,
-            b64ItemIcon: spawn.b64ItemIcon
-        }
-    })
+      return {
+        seriLoc: spawn.location,
+        name: spawn.name,
+        b64ItemIcon: spawn.b64ItemIcon,
+      };
+    }),
   });
 }
