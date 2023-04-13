@@ -224,11 +224,15 @@ async function buyItem(
     embeds: [
       {
         title: "Item Purchased",
-        description: `**Buyer**: \`${
-          buyerDiscord?.id ?? buyerUser.minecraftUUID
-        }\`\n**Seller**: \`${
-          sellerDiscord?.id ?? auctionedItem.seller.minecraftUUID
-        }\`\n**Item**: [${
+        description: `**Buyer**: ${
+          buyerDiscord?.id
+            ? `<@${buyerDiscord.id}>`
+            : `\`buyerUser.minecraftUUID\``
+        }\n**Seller**: ${
+          sellerDiscord?.id
+            ? `<@${sellerDiscord.id}>`
+            : `\`auctionedItem.seller.minecraftUUID\``
+        }\n**Item**: [${
           auctionedItem.type.name
         }](https://tristansmp.com/market/${auctionedItem.type.b64key}) x ${
           meta.amount
