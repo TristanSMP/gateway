@@ -1,4 +1,4 @@
-import type { AuctionedItem, ItemType, User } from "@prisma/client";
+import type { Account, AuctionedItem, ItemType, User } from "@prisma/client";
 import { AuctionStatus } from "@prisma/client";
 import type { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
 import { Routes } from "discord-api-types/v10";
@@ -9,8 +9,8 @@ import { EmbedColor } from "../../../bot/utils/embeds";
 import { sha256 } from "../../../utils/hashing";
 import { prisma } from "../../db/client";
 import { UserError } from "../UserError";
-import { UUIDToProfile } from "../minecraft";
 import { BarrierTexture, ItemTextures } from "../textures";
+import { getDiscordUserSafe } from "../utils";
 import { MarketItemMetadata } from "./schemas";
 import { MarketSerializer } from "./serialization";
 import { RefreshKnownSignShops } from "./signShops";
@@ -126,9 +126,13 @@ async function getDiscoveredItemTypes() {
 async function buyItem(
   auctionedItem: AuctionedItem & {
     type: ItemType | null;
-    seller: User;
+    seller: User & {
+      accounts: Account[];
+    };
   },
-  buyerUser: User
+  buyerUser: User & {
+    accounts: Account[];
+  }
 ) {
   if (
     buyerUser.minecraftUUID === null ||
@@ -211,14 +215,24 @@ async function buyItem(
 
   await RefreshKnownSignShops(auctionedItem); // mark my words this will be a problem when sign shops are scaled immensely and the vercel serverless function times out
 
-  const buyerProfile = await UUIDToProfile(buyerUser.minecraftUUID);
-  const sellerProfile = await UUIDToProfile(auctionedItem.seller.minecraftUUID);
+  const buyerDiscord = await getDiscordUserSafe(buyerUser.accounts);
+  const sellerDiscord = await getDiscordUserSafe(auctionedItem.seller.accounts);
+
+  const meta = MarketItemMetadata.parse(auctionedItem.type.metadata);
 
   await DisployApp.rest.post(Routes.channelMessages("1095921015843991593"), {
     embeds: [
       {
         title: "Item Purchased",
-        description: `**Buyer**: ${buyerProfile.name}\n**Seller**: ${sellerProfile.name}\n**Item**: [${auctionedItem.type.name}](https://tristansmp.com/market/${auctionedItem.type.b64key})\n**Price**: ${auctionedItem.price} diamonds`,
+        description: `**Buyer**: \`${
+          buyerDiscord?.id ?? buyerUser.minecraftUUID
+        }\`\n**Seller**: \`${
+          sellerDiscord?.id ?? auctionedItem.seller.minecraftUUID
+        }\`\n**Item**: [${
+          auctionedItem.type.name
+        }](https://tristansmp.com/market/${auctionedItem.type.b64key}) x ${
+          meta.amount
+        }\n**Price**: ${auctionedItem.price} diamonds`,
         color: EmbedColor.Invisible,
       },
     ],
