@@ -1,11 +1,16 @@
 import type { AuctionedItem, ItemType, User } from "@prisma/client";
 import { AuctionStatus } from "@prisma/client";
+import type { RESTPostAPIChannelMessageJSONBody } from "discord-api-types/v10";
+import { Routes } from "discord-api-types/v10";
 import type { ItemStack } from "elytra";
 import type { z } from "zod";
+import { DisployApp } from "../../../bot/main";
+import { EmbedColor } from "../../../bot/utils/embeds";
 import { sha256 } from "../../../utils/hashing";
 import { prisma } from "../../db/client";
-import { BarrierTexture, ItemTextures } from "../textures";
 import { UserError } from "../UserError";
+import { UUIDToProfile } from "../minecraft";
+import { BarrierTexture, ItemTextures } from "../textures";
 import { MarketItemMetadata } from "./schemas";
 import { MarketSerializer } from "./serialization";
 import { RefreshKnownSignShops } from "./signShops";
@@ -125,6 +130,15 @@ async function buyItem(
   },
   buyerUser: User
 ) {
+  if (
+    buyerUser.minecraftUUID === null ||
+    auctionedItem.seller.minecraftUUID === null
+  ) {
+    throw new UserError(
+      "You or the seller does not have a linked Minecraft account. Please link your Minecraft account to your tsmp market account by running `/link <your minecraft username>`."
+    );
+  }
+
   if (auctionedItem.status !== AuctionStatus.ACTIVE) {
     throw new UserError("Item is not for sale");
   }
@@ -196,6 +210,19 @@ async function buyItem(
   }
 
   await RefreshKnownSignShops(auctionedItem); // mark my words this will be a problem when sign shops are scaled immensely and the vercel serverless function times out
+
+  const buyerProfile = await UUIDToProfile(buyerUser.minecraftUUID);
+  const sellerProfile = await UUIDToProfile(auctionedItem.seller.minecraftUUID);
+
+  await DisployApp.rest.post(Routes.channelMessages("1095921015843991593"), {
+    embeds: [
+      {
+        title: "Item Purchased",
+        description: `**Buyer**: ${buyerProfile.name}\n**Seller**: ${sellerProfile.name}\n**Item**: [${auctionedItem.type.name}](https://tristansmp.com/market/${auctionedItem.type.b64key})\n**Price**: ${auctionedItem.price} diamonds`,
+        color: EmbedColor.Invisible,
+      },
+    ],
+  } satisfies RESTPostAPIChannelMessageJSONBody);
 }
 
 export const MarketUtils = {
