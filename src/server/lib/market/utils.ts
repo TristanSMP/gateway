@@ -234,6 +234,9 @@ async function buyItem(
           meta.amount
         }\n**Price**: ${auctionedItem.price} diamonds`,
         color: EmbedColor.Invisible,
+        thumbnail: {
+          url: `https://tristansmp.com/api/i/${auctionedItem.type.namespacedId}`,
+        },
       },
     ],
   } satisfies RESTPostAPIChannelMessageJSONBody);
