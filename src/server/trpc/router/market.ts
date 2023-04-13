@@ -68,7 +68,11 @@ export const marketRouter = router({
           status: AuctionStatus.ACTIVE,
         },
         include: {
-          seller: true,
+          seller: {
+            include: {
+              accounts: true,
+            },
+          },
           type: true,
         },
       });

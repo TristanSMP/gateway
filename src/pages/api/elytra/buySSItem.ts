@@ -2,12 +2,12 @@ import type { NextApiRequest, NextApiResponse } from "next";
 import { z } from "zod";
 import { env } from "../../../env/server.mjs";
 import { prisma } from "../../../server/db/client";
+import { UserError } from "../../../server/lib/UserError";
 import {
   filterStockedItems,
   getCheapestStockedItem,
 } from "../../../server/lib/market/filter";
 import { MarketUtils } from "../../../server/lib/market/utils";
-import { UserError } from "../../../server/lib/UserError";
 
 export default async function handler(
   req: NextApiRequest,
@@ -27,6 +27,9 @@ export default async function handler(
   const user = await prisma.user.findFirst({
     where: {
       minecraftUUID: data.uuid,
+    },
+    include: {
+      accounts: true,
     },
   });
 
@@ -69,7 +72,11 @@ export default async function handler(
     },
     include: {
       type: true,
-      seller: true,
+      seller: {
+        include: {
+          accounts: true,
+        },
+      },
     },
   });
 
