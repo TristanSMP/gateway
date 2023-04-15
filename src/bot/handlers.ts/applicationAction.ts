@@ -6,7 +6,7 @@ import { prisma } from "../../server/db/client";
 import { updateRoleMeta } from "../../server/lib/discord";
 import { syncUser } from "../../server/lib/linking";
 import { getDiscordUser } from "../../server/lib/utils";
-import { createStatusEmbed } from "../utils/embeds";
+import { EmbedColor } from "../utils/embeds.js";
 
 const allowedRoles = [
   env.DISCORD_STAFF_ROLE_ID,
@@ -90,22 +90,47 @@ async function handle(
 
     console.log("sending response");
 
-    return void interaction.reply({
-      embeds: [
-        createStatusEmbed({
-          entity: "User Application",
-          description: `Updated application status to ${
-            action === "accept" ? "approved" : "denied"
-          }. for <@${discordUser.id}>`,
-          sideEffects: {
-            "Synced user": syncedUser,
-            "Updated role meta": syncedRoleMeta,
+    if (application.status === ApplicationStatus.Approved) {
+      return void interaction.reply({
+        content: `<@${discordUser?.id}>`,
+        embeds: [
+          {
+            description: `Hey, <@${discordUser.id}> a TSMP staff member has reviewed your application.... and has **accepted** you as a member! You should be able to build/break and interact with the world now!`,
+            color: EmbedColor.Invisible,
+            fields: [
+              {
+                name: "What is TristanSMP?",
+                value: "*insert youtube link*",
+                inline: true,
+              },
+              {
+                name: "What client mods should I use? (proximity vc, etc)",
+                value: "*insert youtube link*",
+                inline: true,
+              },
+            ],
+            footer: {
+              text: `${interaction.user.tag} | LP: ${syncedUser} | RM: ${syncedRoleMeta}`,
+            },
+            timestamp: new Date().toISOString(),
           },
-          success: action === "accept",
-          actioner: interaction.user,
-        }),
-      ],
-    });
+        ],
+      });
+    } else {
+      return void interaction.reply({
+        content: `<@${discordUser?.id}>`,
+        embeds: [
+          {
+            description: `Hey, <@${discordUser.id}> a TSMP staff member has reviewed your application.... and has **denied** you as a member. You're free to give more detail here and convince us to change our mind!`,
+            color: EmbedColor.Invisible,
+            footer: {
+              text: `${interaction.user.tag} | LP: ${syncedUser} | RM: ${syncedRoleMeta}`,
+            },
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      });
+    }
   } catch (error) {
     console.error(error);
     return void interaction.reply({
