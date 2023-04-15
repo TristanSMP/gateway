@@ -6,7 +6,7 @@ import { prisma } from "../../server/db/client";
 import { updateRoleMeta } from "../../server/lib/discord";
 import { syncUser } from "../../server/lib/linking";
 import { getDiscordUser } from "../../server/lib/utils";
-import { EmbedColor } from "../utils/embeds.js";
+import { EmbedColor } from "../utils/embeds";
 
 const allowedRoles = [
   env.DISCORD_STAFF_ROLE_ID,
