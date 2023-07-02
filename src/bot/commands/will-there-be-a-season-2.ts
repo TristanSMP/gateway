@@ -37,12 +37,14 @@ const WillThereBeASeason2: Command = {
 
     return void interaction.reply({
       content: [
-        `Currently as of ${new Date().toLocaleString()}, there are ${yesReactionCount} votes for yes.`,
-        `This is ${Math.round(
+        `Currently as of <t:${Math.floor(
+          Date.now() / 1000
+        )}:F>, there are \`${yesReactionCount}\` **votes for yes**.`,
+        `This is \`${Math.round(
           (yesReactionCount / totalMembers) * 100
-        )}% of the server.`,
-        `There will be a season 2, if this number reaches 95%.`,
-        `You have until Friday to vote!`,
+        )}%\` of **accepted members**.`,
+        `There **will be** a season 2, if this number reaches **\`95%\`**.`,
+        `You have **until Friday** to vote!`,
       ].join("\n"),
     });
   },
