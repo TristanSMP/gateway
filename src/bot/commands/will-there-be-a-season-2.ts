@@ -8,6 +8,7 @@ const WillThereBeASeason2: Command = {
 
   async run(interaction: ChatInputInteraction) {
     const voteMessage = await interaction.app.messages.fetch(
+      "952064632187658261",
       "952069009069735966",
       "1125000199186681868"
     );
