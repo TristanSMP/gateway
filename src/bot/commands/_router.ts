@@ -10,6 +10,7 @@ import Refresh from "./refresh";
 import ResetUser from "./reset-user";
 import UserStats from "./stats";
 import SuggestMOTD from "./suggest-motd";
+import WillThereBeASeason2 from "./will-there-be-a-season-2";
 
 export const Commands = [
   Ping,
@@ -24,4 +25,5 @@ export const Commands = [
   InDiscordApply,
   MarketLeaderboard,
   SuggestMOTD,
+  WillThereBeASeason2,
 ];
