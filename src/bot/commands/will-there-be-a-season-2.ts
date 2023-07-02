@@ -30,9 +30,10 @@ const WillThereBeASeason2: Command = {
       },
     });
 
-    const yesReactionCount = reactions.filter(
-      (reaction) => reaction.emoji.name === "👍"
-    ).length;
+    const yesReactionCount = reactions
+      .filter((reaction) => reaction.emoji.name === "👍")
+      .map((reaction) => reaction.count)
+      .reduce((a, b) => a + b);
 
     return void interaction.reply({
       content: [
