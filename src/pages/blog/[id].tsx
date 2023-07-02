@@ -8,11 +8,12 @@ import type {
   InferGetStaticPropsType,
   NextPage,
 } from "next";
-
 import { NextSeo } from "next-seo";
 import Image from "next/image";
 import Link from "next/link";
-import { NotionAPI } from "notion-client";
+import type { NotionAPI } from "notion-client";
+// @ts-ignore
+import { NotionCompatAPI } from "notion-compat";
 import { NotionRenderer } from "react-notion-x";
 import { z } from "zod";
 import BlogPageInfo from "../../components/blog/BlogPageInfo";
@@ -34,10 +35,7 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
     auth: token,
   });
 
-  const notionX = new NotionAPI({
-    activeUser: env.NOTION_ACTIVE_USER,
-    authToken: env.NOTION_TOKEN_V2,
-  });
+  const notionX = new NotionCompatAPI(notion) as NotionAPI;
 
   const slug = z.string().parse(context.params?.id);
 
